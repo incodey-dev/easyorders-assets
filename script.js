@@ -241,3 +241,40 @@
     start();
   }
 })();
+
+function fixSliderMobileImages() {
+  const pictures = document.querySelectorAll(
+    ".home_slider_container picture, .home_banner picture"
+  );
+
+  pictures.forEach((picture) => {
+    const sources = Array.from(picture.querySelectorAll("source"));
+    const img = picture.querySelector("img");
+
+    const mobileSource = sources.find((source) =>
+      source.getAttribute("media")?.includes("max-width: 425px")
+    );
+
+    const desktopSource = sources.find((source) =>
+      source.getAttribute("media")?.includes("min-width: 426px")
+    );
+
+    if (!mobileSource || !desktopSource) return;
+
+    mobileSource.setAttribute("media", `(max-width: ${MOBILE_MAX}px)`);
+    desktopSource.setAttribute("media", `(min-width: ${MOBILE_MAX + 1}px)`);
+
+    if (img) {
+      const mobileSrc = mobileSource.getAttribute("srcset");
+      const desktopSrc = desktopSource.getAttribute("srcset");
+
+      if (window.innerWidth <= MOBILE_MAX && mobileSrc) {
+        img.setAttribute("src", mobileSrc);
+      }
+
+      if (window.innerWidth > MOBILE_MAX && desktopSrc) {
+        img.setAttribute("src", desktopSrc);
+      }
+    }
+  });
+}
