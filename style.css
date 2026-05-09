@@ -25,7 +25,8 @@ header .h-14.flex.items-center {
 }
 
 #headlessui-portal-root .pointer-events-none.fixed.inset-y-0.left-0.flex.max-w-full.ps-10 {
-    right: 0;
+    right: 0 !important;
     padding-right: 0px !important;
     margin-right: 0px !important;
+    left: auto !important;
 }
