@@ -12,3 +12,10 @@ header .h-14.flex.items-center {
     border-radius: 20px;
     margin-bottom: 80px;
 }
+
+@media screen and (max-width: 768px) {
+    .css-1ywlaqq .animate-slideIn.cursor-pointer {
+    border-bottom: 1px #0000002e solid !important;
+    padding-bottom: 20px;
+    }
+}
