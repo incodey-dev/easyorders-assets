@@ -79,7 +79,7 @@ button.flex.items-center.justify-center.gap-2.py-3.px-8.text-base.font-medium.tr
     opacity: 1;
 }
 
-span.absolute.inset-0.w-full.h-full.bg-\[\#f3f3f3\].hidden {
+main.container_class.pb-8.sm\:pb-10.pt-8.sm\:pt-10 span.absolute.inset-0.w-full.h-full.bg-\[\#f3f3f3\].hidden {
     display: block !important;
     background: #00000078 !important;
     opacity: 1 !important;
@@ -93,4 +93,7 @@ p.text-white.text-sm.md\:text-xl {
 }
 button.w-fit.mx-auto.flex.gap-2\.5.items-center.text-sm.md\:text-base.text-white.font-semibold.border.border-\[\#E2E2E2\].rounded-2xl.py-3.px-7.md\:px-10.md\:mt-3 {
     z-index: 2;
+}
+nav span.absolute.inset-0.w-full.h-full.bg-\[\#f3f3f3\].hidden {
+    display: none !important;
 }
