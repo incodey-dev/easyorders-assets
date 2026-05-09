@@ -1,13 +1,3 @@
-/* =========================================================
-   EasyOrders Custom Script
-   1) Infinite scroll: auto-click "تحميل المزيد"
-   2) Responsive images: slider + banner mobile image up to 768px
-   ========================================================= */
-
-
-/* =========================================================
-   1) Infinite Scroll - Auto click "تحميل المزيد"
-   ========================================================= */
 (function () {
   const SETTINGS = {
     loadMoreTexts: ["تحميل المزيد", "Load more", "Load More"],
