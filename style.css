@@ -2,5 +2,13 @@ header .h-14.flex.items-center {
     display: flex;
     flex-direction: row-reverse !important;
     align-items: center;
-    background: red;
+}
+
+.flex.flex-col.gap-8.css-1pk60b8 {
+    padding-top: 0px;
+}
+
+.flex.flex-col.gap-8.css-1ywlaqq {
+    border-radius: 20px;
+    margin-bottom: 80px;
 }
