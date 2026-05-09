@@ -79,7 +79,11 @@ button.flex.items-center.justify-center.gap-2.py-3.px-8.text-base.font-medium.tr
     opacity: 1;
 }
 
-main.container_class.pb-8.sm\:pb-10.pt-8.sm\:pt-10 span.absolute.inset-0.w-full.h-full.bg-\[\#f3f3f3\].hidden {
+main.container_class > .content_container:nth-of-type(3)
+  .flex.flex-row.flex-wrap > div:nth-child(2)
+  > div:first-child
+  > div:first-child
+  > span.absolute.inset-0.bg-\[\#f3f3f3\] {
     display: block !important;
     background: #00000078 !important;
     opacity: 1 !important;
