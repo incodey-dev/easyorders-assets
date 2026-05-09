@@ -78,3 +78,19 @@ button.flex.items-center.justify-center.gap-2.py-3.px-8.text-base.font-medium.tr
     color: #000000;
     opacity: 1;
 }
+
+span.absolute.inset-0.w-full.h-full.bg-\[\#f3f3f3\].hidden {
+    display: block !important;
+    background: #00000078 !important;
+    opacity: 1 !important;
+    z-index: 1 !important;
+}
+h3.text-white.text-2xl.md\:text-\[42px\].font-bold {
+    z-index: 2;
+}
+p.text-white.text-sm.md\:text-xl {
+    z-index: 2;
+}
+button.w-fit.mx-auto.flex.gap-2\.5.items-center.text-sm.md\:text-base.text-white.font-semibold.border.border-\[\#E2E2E2\].rounded-2xl.py-3.px-7.md\:px-10.md\:mt-3 {
+    z-index: 2;
+}
