@@ -58,3 +58,23 @@ footer {
     --tw-shadow-colored: 0px 8px 50px 0px var(--tw-shadow-color);
     box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
+
+button.flex.items-center.justify-center.gap-2.py-3.px-8.text-base.font-medium.transition-colors.duration-200.ease-in-out.focus\:outline-none.w-full.border.border-transparent.bg-skin-primary.hover\:bg-skin-primary.hover\:bg-opacity-80.active\:bg-opacity-90.text-gray-900.rounded-xl.md\:rounded-2xl.checkout_btn {
+    background: black;
+    color: white;
+}
+
+button.flex.items-center.justify-center.gap-2.py-3.px-8.text-base.font-medium.transition-colors.duration-200.ease-in-out.focus\:outline-none.w-full.border.border-transparent.bg-skin-primary.hover\:bg-skin-primary.hover\:bg-opacity-80.active\:bg-opacity-90.text-gray-900.rounded-xl.md\:rounded-2xl.checkout_btn:hover {
+    background: #373737;
+}
+
+button.flex.items-center.justify-center.gap-2.py-3.px-8.text-base.font-medium.transition-colors.duration-200.ease-in-out.focus\:outline-none.w-full.border.border-skin-primary.bg-white.hover\:bg-gray-50.active\:bg-gray-100.text-gray-900.rounded-xl.md\:rounded-2xl.add_to_cart_btn {
+    border: 1px solid black;
+}
+
+button.flex.items-center.justify-center.gap-2.py-3.px-8.text-base.font-medium.transition-colors.duration-200.ease-in-out.focus\:outline-none.w-full.border.border-skin-primary.bg-white.hover\:bg-gray-50.active\:bg-gray-100.text-gray-900.rounded-xl.md\:rounded-2xl.add_to_cart_btn:hover {
+    border: none;
+    background: #ffb318;
+    color: #000000;
+    opacity: 1;
+}
