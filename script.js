@@ -1,8 +1,17 @@
+/* =========================================================
+   EasyOrders Custom Script
+   1) Infinite scroll: auto-click "تحميل المزيد"
+   2) Responsive images: slider + banner mobile image up to 768px
+   ========================================================= */
+
+
+/* =========================================================
+   1) Infinite Scroll - Auto click "تحميل المزيد"
+   ========================================================= */
 (function () {
   const SETTINGS = {
     loadMoreTexts: ["تحميل المزيد", "Load more", "Load More"],
     rootMargin: "900px 0px",
-    cooldown: 1500,
     maxClicks: 200,
     debug: false
   };
@@ -179,60 +188,106 @@
   }
 })();
 
+
+/* =========================================================
+   2) Slider + Banner responsive images fix
+   Mobile image: 0px -> 768px
+   Desktop image: 769px and above
+   ========================================================= */
 (function () {
   const MOBILE_MAX = 768;
+  const DESKTOP_MIN = MOBILE_MAX + 1;
 
-  function fixSliderMobileImages() {
-    const pictures = document.querySelectorAll(
-      ".home_slider_container picture"
-    );
+  const PICTURE_SELECTOR = [
+    ".home_slider_container picture",
+    ".home_banner picture"
+  ].join(", ");
 
-    pictures.forEach((picture) => {
-      const sources = Array.from(picture.querySelectorAll("source"));
-      const img = picture.querySelector("img");
+  function getSourceByMedia(sources, type) {
+    return sources.find((source) => {
+      const media = source.getAttribute("media") || "";
 
-      const mobileSource = sources.find((source) =>
-        source.getAttribute("media")?.includes("max-width: 425px")
-      );
-
-      const desktopSource = sources.find((source) =>
-        source.getAttribute("media")?.includes("min-width: 426px")
-      );
-
-      if (!mobileSource || !desktopSource) return;
-
-      mobileSource.setAttribute("media", `(max-width: ${MOBILE_MAX}px)`);
-      desktopSource.setAttribute("media", `(min-width: ${MOBILE_MAX + 1}px)`);
-
-      // إجبار الصورة تتحدث لو المتصفح كان اختار الصورة القديمة بالفعل
-      if (img) {
-        const mobileSrc = mobileSource.getAttribute("srcset");
-        const desktopSrc = desktopSource.getAttribute("srcset");
-
-        if (window.innerWidth <= MOBILE_MAX && mobileSrc) {
-          img.setAttribute("src", mobileSrc);
-        }
-
-        if (window.innerWidth > MOBILE_MAX && desktopSrc) {
-          img.setAttribute("src", desktopSrc);
-        }
+      if (type === "mobile") {
+        return media.includes("max-width");
       }
+
+      if (type === "desktop") {
+        return media.includes("min-width");
+      }
+
+      return false;
     });
   }
 
-  function start() {
-    fixSliderMobileImages();
+  function applyCorrectImage(picture) {
+    const sources = Array.from(picture.querySelectorAll("source"));
+    const img = picture.querySelector("img");
 
-    const observer = new MutationObserver(() => {
-      fixSliderMobileImages();
+    if (!sources.length || !img) return;
+
+    const mobileSource = getSourceByMedia(sources, "mobile");
+    const desktopSource = getSourceByMedia(sources, "desktop");
+
+    if (!mobileSource || !desktopSource) return;
+
+    mobileSource.setAttribute("media", `(max-width: ${MOBILE_MAX}px)`);
+    desktopSource.setAttribute("media", `(min-width: ${DESKTOP_MIN}px)`);
+
+    const mobileSrc = mobileSource.getAttribute("srcset");
+    const desktopSrc = desktopSource.getAttribute("srcset");
+
+    if (window.innerWidth <= MOBILE_MAX && mobileSrc) {
+      if (img.getAttribute("src") !== mobileSrc) {
+        img.setAttribute("src", mobileSrc);
+      }
+
+      if (img.getAttribute("srcset") !== mobileSrc) {
+        img.setAttribute("srcset", mobileSrc);
+      }
+    }
+
+    if (window.innerWidth >= DESKTOP_MIN && desktopSrc) {
+      if (img.getAttribute("src") !== desktopSrc) {
+        img.setAttribute("src", desktopSrc);
+      }
+
+      if (img.getAttribute("srcset") !== desktopSrc) {
+        img.setAttribute("srcset", desktopSrc);
+      }
+    }
+  }
+
+  function fixResponsivePictures() {
+    const pictures = document.querySelectorAll(PICTURE_SELECTOR);
+
+    pictures.forEach((picture) => {
+      applyCorrectImage(picture);
+    });
+  }
+
+  function runFixSoon() {
+    fixResponsivePictures();
+
+    setTimeout(fixResponsivePictures, 300);
+    setTimeout(fixResponsivePictures, 1000);
+    setTimeout(fixResponsivePictures, 2000);
+  }
+
+  function start() {
+    runFixSoon();
+
+    const responsiveObserver = new MutationObserver(() => {
+      fixResponsivePictures();
     });
 
-    observer.observe(document.body, {
+    responsiveObserver.observe(document.body, {
       childList: true,
       subtree: true
     });
 
-    window.addEventListener("resize", fixSliderMobileImages);
+    window.addEventListener("resize", fixResponsivePictures);
+    window.addEventListener("orientationchange", runFixSoon);
+    window.addEventListener("load", runFixSoon);
   }
 
   if (document.readyState === "loading") {
@@ -241,40 +296,3 @@
     start();
   }
 })();
-
-function fixSliderMobileImages() {
-  const pictures = document.querySelectorAll(
-    ".home_slider_container picture, .home_banner picture"
-  );
-
-  pictures.forEach((picture) => {
-    const sources = Array.from(picture.querySelectorAll("source"));
-    const img = picture.querySelector("img");
-
-    const mobileSource = sources.find((source) =>
-      source.getAttribute("media")?.includes("max-width: 425px")
-    );
-
-    const desktopSource = sources.find((source) =>
-      source.getAttribute("media")?.includes("min-width: 426px")
-    );
-
-    if (!mobileSource || !desktopSource) return;
-
-    mobileSource.setAttribute("media", `(max-width: ${MOBILE_MAX}px)`);
-    desktopSource.setAttribute("media", `(min-width: ${MOBILE_MAX + 1}px)`);
-
-    if (img) {
-      const mobileSrc = mobileSource.getAttribute("srcset");
-      const desktopSrc = desktopSource.getAttribute("srcset");
-
-      if (window.innerWidth <= MOBILE_MAX && mobileSrc) {
-        img.setAttribute("src", mobileSrc);
-      }
-
-      if (window.innerWidth > MOBILE_MAX && desktopSrc) {
-        img.setAttribute("src", desktopSrc);
-      }
-    }
-  });
-}
