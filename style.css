@@ -105,3 +105,7 @@ nav span.absolute.inset-0.w-full.h-full.bg-\[\#f3f3f3\].hidden {
 #hero .left-side .main-content .choosing .form-container {
         background-color: #e630540f !important;
 }
+
+.in-product-quantity-counter {
+        background-color: #e6305430;
+}
