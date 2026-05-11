@@ -101,3 +101,7 @@ button.w-fit.mx-auto.flex.gap-2\.5.items-center.text-sm.md\:text-base.text-white
 nav span.absolute.inset-0.w-full.h-full.bg-\[\#f3f3f3\].hidden {
     display: none !important;
 }
+
+#hero .left-side .main-content .choosing .form-container {
+        background-color: #e630540f !important;
+}
