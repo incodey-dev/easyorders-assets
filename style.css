@@ -113,3 +113,10 @@ nav span.absolute.inset-0.w-full.h-full.bg-\[\#f3f3f3\].hidden {
 .accordion-butn:hover {
     background-color: #ffe0e8;
 }
+
+button#x-checkout-btn {
+    animation: none !important;
+}
+button#x-checkout-btn:hover {
+    background: #d1032c;
+}
