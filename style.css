@@ -125,3 +125,14 @@ button#x-checkout-btn:hover {
     color: #E63054;
     background-color: #fddee7;
 }
+#hero .left-side .main-content .rating-box {
+    background-image: linear-gradient(274deg, #fb2e781f, transparent);
+}
+
+#hero .choosing .order-now {
+    box-shadow: none;
+}
+
+.accordion-element .accordion-butn .btn-title .right img {
+    background-color: rgb(255 224 232);
+}
