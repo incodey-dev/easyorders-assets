@@ -1,119 +1,128 @@
 /* =========================================
    PREMIUM ARABIC COSMETICS FUNNEL — JS
-   Version: 2.0
+   Version: 2.1 — EasyOrders Compatible
    Pure Vanilla JS — No Dependencies
    ========================================= */
 
 document.addEventListener('DOMContentLoaded', function () {
 
-  // ─── Page Loader ───
-  const pageLoader = document.querySelector('.page-loader');
-  if (pageLoader) {
-    setTimeout(() => {
-      pageLoader.classList.add('hidden');
-      setTimeout(() => pageLoader.remove(), 400);
-    }, 300);
+  // ─── IntersectionObserver — Section Reveal ───
+  var revealSections = document.querySelectorAll('.section-reveal');
+  if (revealSections.length) {
+    var revealObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    revealSections.forEach(function (section) { revealObserver.observe(section); });
   }
 
-  // ─── IntersectionObserver — Section Reveal ───
-  const revealSections = document.querySelectorAll('.section-reveal');
-  const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        revealObserver.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-
-  revealSections.forEach(section => revealObserver.observe(section));
-
   // ─── Header — Scroll Glassmorphism ───
-  const header = document.querySelector('.site-header');
-  let lastScroll = 0;
-
-  function onHeaderScroll() {
-    const scrollY = window.scrollY;
-    if (header) {
-      if (scrollY > 40) {
+  var header = document.querySelector('.site-header');
+  if (header) {
+    function onHeaderScroll() {
+      if (window.scrollY > 40) {
         header.classList.add('scrolled');
       } else {
         header.classList.remove('scrolled');
       }
     }
-    lastScroll = scrollY;
+    window.addEventListener('scroll', onHeaderScroll, { passive: true });
+    onHeaderScroll();
   }
-  window.addEventListener('scroll', onHeaderScroll, { passive: true });
-  onHeaderScroll();
 
   // ─── Smooth Scroll for Anchor Links ───
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
     anchor.addEventListener('click', function (e) {
-      const target = document.querySelector(this.getAttribute('href'));
+      var href = this.getAttribute('href');
+      if (!href || href === '#') return;
+      var target = document.querySelector(href);
       if (target) {
         e.preventDefault();
-        const offset = 80;
-        const top = target.getBoundingClientRect().top + window.scrollY - offset;
-        window.scrollTo({ top, behavior: 'smooth' });
+        var offset = 80;
+        var top = target.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top: top, behavior: 'smooth' });
       }
     });
   });
 
-  // ─── Product Image Gallery ───
-  const mainImage = document.querySelector('.product-main-image');
-  const thumbs = document.querySelectorAll('.product-thumbnails .thumb');
+  // ─── EasyOrders Gallery — Thumbnail Click (event delegation) ───
+  // Works with Mustache-rendered images after initMustache()
+  function initGalleryThumbs() {
+    var thumbsContainer = document.querySelector('.product-thumbnails');
+    var mainImageContainer = document.querySelector('.product-main-image');
+    if (!thumbsContainer || !mainImageContainer) return;
 
-  thumbs.forEach(thumb => {
-    thumb.addEventListener('click', function () {
-      thumbs.forEach(t => t.classList.remove('active'));
-      this.classList.add('active');
-      // Simulate image change with fade
-      if (mainImage) {
-        mainImage.style.opacity = '0';
-        setTimeout(() => {
-          mainImage.style.opacity = '1';
-        }, 200);
+    thumbsContainer.addEventListener('click', function (e) {
+      var thumb = e.target.closest('.thumb');
+      if (!thumb) return;
+
+      // Update active states
+      thumbsContainer.querySelectorAll('.thumb').forEach(function (t) {
+        t.classList.remove('active');
+      });
+      thumb.classList.add('active');
+
+      // Update main image carousel
+      var slideIndex = thumb.getAttribute('data-bs-slide-to');
+      if (slideIndex !== null) {
+        var items = mainImageContainer.querySelectorAll('.carousel-item');
+        items.forEach(function (item) { item.classList.remove('active'); });
+        var targetItem = items[parseInt(slideIndex, 10)];
+        if (targetItem) targetItem.classList.add('active');
       }
     });
-  });
+  }
+  initGalleryThumbs();
 
-  // ─── Quantity Selector ───
-  const qtyDisplay = document.querySelector('.qty-value');
-  let qty = 1;
-
-  document.querySelectorAll('.product-quantity button').forEach(btn => {
-    btn.addEventListener('click', function () {
-      if (this.dataset.action === 'increase') {
-        qty = Math.min(qty + 1, 10);
-      } else if (this.dataset.action === 'decrease') {
-        qty = Math.max(qty - 1, 1);
-      }
-      if (qtyDisplay) qtyDisplay.textContent = qty;
-      updatePriceSummary();
+  // Re-initialize after EasyOrders Mustache renders
+  // Watch for DOM changes inside the gallery
+  var galleryEl = document.getElementById('carouselExampleIndicators');
+  if (galleryEl) {
+    var galleryObserver = new MutationObserver(function () {
+      initGalleryThumbs();
+      syncFixedPrice();
     });
-  });
+    galleryObserver.observe(galleryEl, { childList: true, subtree: true });
+  }
 
-  // ─── Bundle Cards (Product Section) ───
-  const bundleCards = document.querySelectorAll('.bundle-card');
-  let selectedBundle = 1; // default: first
+  // ─── Sync Fixed Price from EasyOrders-rendered price ───
+  function syncFixedPrice() {
+    var salePriceEl = document.getElementById('salePrice');
+    var basePriceEl = document.getElementById('basePrice');
+    var fixedSale = document.getElementById('salePrice-fixed');
+    var fixedBase = document.getElementById('basePrice-fixed');
 
-  bundleCards.forEach((card, idx) => {
-    card.addEventListener('click', function () {
-      bundleCards.forEach(c => c.classList.remove('selected'));
-      this.classList.add('selected');
-      selectedBundle = idx + 1;
-      updatePriceSummary();
+    if (salePriceEl && fixedSale) {
+      fixedSale.textContent = salePriceEl.textContent;
+    }
+    if (basePriceEl && fixedBase) {
+      fixedBase.textContent = basePriceEl.textContent;
+    }
+  }
+
+  // Also observe the price block for EasyOrders updates
+  var priceBlock = document.getElementById('price');
+  if (priceBlock) {
+    var priceObserver = new MutationObserver(function () {
+      syncFixedPrice();
     });
-  });
+    priceObserver.observe(priceBlock, { childList: true, subtree: true, characterData: true });
+  }
 
   // ─── FAQ Accordion ───
-  document.querySelectorAll('.faq-question').forEach(question => {
+  document.querySelectorAll('.faq-question').forEach(function (question) {
     question.addEventListener('click', function () {
-      const item = this.closest('.faq-item');
-      const isOpen = item.classList.contains('open');
+      var item = this.closest('.faq-item');
+      if (!item) return;
+      var isOpen = item.classList.contains('open');
 
       // Close all
-      document.querySelectorAll('.faq-item.open').forEach(openItem => {
+      document.querySelectorAll('.faq-item.open').forEach(function (openItem) {
         openItem.classList.remove('open');
       });
 
@@ -125,21 +134,21 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // ─── Review Filter Tabs ───
-  const filterPills = document.querySelectorAll('.review-filters .filter-pill');
-  const reviewCards = document.querySelectorAll('.review-card');
+  var filterPills = document.querySelectorAll('.review-filters .filter-pill');
+  var reviewCards = document.querySelectorAll('.review-card');
 
-  filterPills.forEach(pill => {
+  filterPills.forEach(function (pill) {
     pill.addEventListener('click', function () {
-      filterPills.forEach(p => p.classList.remove('active'));
+      filterPills.forEach(function (p) { p.classList.remove('active'); });
       this.classList.add('active');
 
-      const category = this.dataset.filter;
-      reviewCards.forEach(card => {
+      var category = this.dataset.filter;
+      reviewCards.forEach(function (card) {
         if (category === 'all' || card.dataset.category === category) {
           card.style.display = '';
           card.style.opacity = '0';
           card.style.transform = 'translateY(10px)';
-          requestAnimationFrame(() => {
+          requestAnimationFrame(function () {
             card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
             card.style.opacity = '1';
             card.style.transform = 'translateY(0)';
@@ -152,18 +161,18 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // ─── Load More Reviews ───
-  const loadMoreBtn = document.querySelector('.load-more-reviews button');
+  var loadMoreBtn = document.querySelector('.load-more-reviews button');
   if (loadMoreBtn) {
     loadMoreBtn.addEventListener('click', function () {
-      const hiddenCards = document.querySelectorAll('.review-card.hidden-card');
-      let shown = 0;
-      hiddenCards.forEach(card => {
+      var hiddenCards = document.querySelectorAll('.review-card.hidden-card');
+      var shown = 0;
+      hiddenCards.forEach(function (card) {
         if (shown < 3) {
           card.classList.remove('hidden-card');
           card.style.display = '';
           card.style.opacity = '0';
           card.style.transform = 'translateY(15px)';
-          requestAnimationFrame(() => {
+          requestAnimationFrame(function () {
             card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
             card.style.opacity = '1';
             card.style.transform = 'translateY(0)';
@@ -171,8 +180,7 @@ document.addEventListener('DOMContentLoaded', function () {
           shown++;
         }
       });
-      // Hide button if no more
-      const remaining = document.querySelectorAll('.review-card.hidden-card');
+      var remaining = document.querySelectorAll('.review-card.hidden-card');
       if (remaining.length === 0) {
         loadMoreBtn.style.display = 'none';
       }
@@ -180,27 +188,29 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ─── Stats Counter Animation ───
-  const statsNumbers = document.querySelectorAll('.trust-number[data-count]');
-  const statsObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const el = entry.target;
-        const target = parseInt(el.dataset.count, 10);
-        animateCounter(el, 0, target, 1500);
-        statsObserver.unobserve(el);
-      }
-    });
-  }, { threshold: 0.5 });
+  var statsNumbers = document.querySelectorAll('.trust-number[data-count]');
+  if (statsNumbers.length) {
+    var statsObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          var el = entry.target;
+          var target = parseInt(el.dataset.count, 10);
+          animateCounter(el, 0, target, 1500);
+          statsObserver.unobserve(el);
+        }
+      });
+    }, { threshold: 0.5 });
 
-  statsNumbers.forEach(el => statsObserver.observe(el));
+    statsNumbers.forEach(function (el) { statsObserver.observe(el); });
+  }
 
   function animateCounter(el, start, end, duration) {
-    const startTime = performance.now();
+    var startTime = performance.now();
     function update(currentTime) {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic
-      const current = Math.round(start + (end - start) * eased);
+      var elapsed = currentTime - startTime;
+      var progress = Math.min(elapsed / duration, 1);
+      var eased = 1 - Math.pow(1 - progress, 3);
+      var current = Math.round(start + (end - start) * eased);
       el.textContent = current.toLocaleString('ar-EG');
       if (progress < 1) {
         requestAnimationFrame(update);
@@ -210,26 +220,29 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ─── Stock Progress Bar Animation ───
-  const scarcityFill = document.querySelector('.scarcity-fill');
+  var scarcityFill = document.querySelector('.scarcity-fill');
   if (scarcityFill) {
-    const scarcityObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          setTimeout(() => {
-            scarcityFill.style.width = scarcityFill.dataset.fill + '%';
-          }, 300);
-          scarcityObserver.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.3 });
-    scarcityObserver.observe(scarcityFill.closest('.stock-scarcity'));
+    var scarcityParent = scarcityFill.closest('.stock-scarcity');
+    if (scarcityParent) {
+      var scarcityObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            setTimeout(function () {
+              scarcityFill.style.width = scarcityFill.dataset.fill + '%';
+            }, 300);
+            scarcityObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.3 });
+      scarcityObserver.observe(scarcityParent);
+    }
   }
 
   // ─── Countdown Timer (24h from first visit, localStorage) ───
-  const countdownTimer = document.querySelector('.upsell-countdown .countdown-timer');
+  var countdownTimer = document.querySelector('.upsell-countdown .countdown-timer');
   if (countdownTimer) {
-    const STORAGE_KEY = 'funnel_countdown_end';
-    let endTime = localStorage.getItem(STORAGE_KEY);
+    var STORAGE_KEY = 'funnel_countdown_end';
+    var endTime = localStorage.getItem(STORAGE_KEY);
 
     if (!endTime) {
       endTime = Date.now() + 24 * 60 * 60 * 1000;
@@ -238,25 +251,24 @@ document.addEventListener('DOMContentLoaded', function () {
       endTime = parseInt(endTime, 10);
     }
 
-    const hoursEl = countdownTimer.querySelector('.hours-value');
-    const minutesEl = countdownTimer.querySelector('.minutes-value');
-    const secondsEl = countdownTimer.querySelector('.seconds-value');
+    var hoursEl = countdownTimer.querySelector('.hours-value');
+    var minutesEl = countdownTimer.querySelector('.minutes-value');
+    var secondsEl = countdownTimer.querySelector('.seconds-value');
 
     function updateCountdown() {
-      const now = Date.now();
-      let diff = Math.max(0, Math.floor((endTime - now) / 1000));
+      var now = Date.now();
+      var diff = Math.max(0, Math.floor((endTime - now) / 1000));
 
-      const hours = Math.floor(diff / 3600);
+      var hours = Math.floor(diff / 3600);
       diff %= 3600;
-      const minutes = Math.floor(diff / 60);
-      const seconds = diff % 60;
+      var minutes = Math.floor(diff / 60);
+      var seconds = diff % 60;
 
       if (hoursEl) hoursEl.textContent = String(hours).padStart(2, '0');
       if (minutesEl) minutesEl.textContent = String(minutes).padStart(2, '0');
       if (secondsEl) secondsEl.textContent = String(seconds).padStart(2, '0');
 
       if (diff <= 0) {
-        // Reset timer
         endTime = Date.now() + 24 * 60 * 60 * 1000;
         localStorage.setItem(STORAGE_KEY, endTime);
       }
@@ -267,128 +279,43 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ─── Mobile Sticky CTA Bar ───
-  const mobileBar = document.querySelector('.mobile-sticky-bar');
-  if (mobileBar) {
+  var mobileBar = document.querySelector('.mobile-sticky-bar');
+  if (mobileBar && window.innerWidth <= 768) {
+    var stickyThreshold = 500;
     window.addEventListener('scroll', function () {
-      if (window.scrollY > 500) {
+      if (window.scrollY > stickyThreshold) {
         mobileBar.classList.add('visible');
+        document.body.classList.add('sticky-bar-active');
       } else {
         mobileBar.classList.remove('visible');
+        document.body.classList.remove('sticky-bar-active');
       }
     }, { passive: true });
   }
 
-  // ─── Order Form — Bundle Selector ───
-  const orderBundleOptions = document.querySelectorAll('.order-bundle-selector .bundle-option');
-  orderBundleOptions.forEach((option, idx) => {
-    option.addEventListener('click', function () {
-      orderBundleOptions.forEach(o => o.classList.remove('selected'));
-      this.classList.add('selected');
-      selectedBundle = idx + 1;
-      updatePriceSummary();
-    });
-  });
-
-  // ─── Order Form — Price Summary Update ───
-  function updatePriceSummary() {
-    const prices = [199, 349, 499];
-    const shippingEl = document.querySelector('.price-shipping');
-    const totalEl = document.querySelector('.price-total-value');
-
-    if (totalEl) {
-      const price = prices[selectedBundle - 1] || prices[0];
-      totalEl.textContent = price + ' جنيه';
-      if (shippingEl) {
-        shippingEl.textContent = selectedBundle >= 3 ? 'مجاني ✓' : '50 جنيه';
-        if (selectedBundle >= 3) {
-          shippingEl.classList.add('free-badge');
-        } else {
-          shippingEl.classList.remove('free-badge');
-        }
-      }
-      // Update mobile sticky bar price
-      const barPrice = document.querySelector('.mobile-sticky-bar .bar-price');
-      if (barPrice) {
-        barPrice.innerHTML = price + ' جنيه';
-      }
-    }
-  }
-
-  // ─── Order Form — Phone Validation ───
-  const phoneInput = document.querySelector('#order-phone');
-  if (phoneInput) {
-    phoneInput.addEventListener('input', function () {
-      this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11);
-    });
-  }
-
-  // ─── Order Form — Submit ───
-  const orderForm = document.querySelector('#order-form');
-  if (orderForm) {
-    orderForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-      const name = this.querySelector('#order-name').value.trim();
-      const phone = this.querySelector('#order-phone').value.trim();
-      const gov = this.querySelector('#order-gov').value;
-      const address = this.querySelector('#order-address').value.trim();
-
-      if (!name || !phone || !address) {
-        alert('يرجى ملء جميع الحقول المطلوبة');
-        return;
-      }
-      if (phone.length !== 11) {
-        alert('يرجى إدخال رقم موبايل صحيح (11 رقم)');
-        return;
-      }
-
-      const submitBtn = this.querySelector('.btn-submit');
-      submitBtn.textContent = 'جاري تأكيد الطلب...';
-      submitBtn.disabled = true;
-
-      setTimeout(() => {
-        alert('تم استلام طلبك بنجاح! سنتواصل معك قريباً لتأكيد الطلب.');
-        submitBtn.textContent = 'أكملي الطلب الآن ← الدفع عند الاستلام';
-        submitBtn.disabled = false;
-      }, 1500);
-    });
-  }
-
-  // ─── Parallax Hero (subtle) ───
-  const heroImage = document.querySelector('.hero-image-placeholder');
+  // ─── Parallax Hero (subtle, desktop only) ───
+  var heroImage = document.querySelector('.hero-image-placeholder');
   if (heroImage && window.innerWidth > 768) {
     window.addEventListener('scroll', function () {
-      const scrollY = window.scrollY;
+      var scrollY = window.scrollY;
       if (scrollY < window.innerHeight) {
-        heroImage.style.transform = 'translateY(' + (scrollY * 0.15) + 'px)';
+        heroImage.style.transform = 'translateY(' + (scrollY * 0.12) + 'px)';
       }
     }, { passive: true });
   }
 
   // ─── Viewing Count (simulated) ───
-  const viewingEl = document.querySelector('.viewing-count');
+  var viewingEl = document.querySelector('.viewing-count');
   if (viewingEl) {
     function updateViewing() {
-      const count = Math.floor(Math.random() * 20) + 35;
+      var count = Math.floor(Math.random() * 20) + 35;
       viewingEl.textContent = count;
     }
     updateViewing();
     setInterval(updateViewing, 15000);
   }
 
-  // ─── Initial Selections ───
-  // Select first bundle card
-  if (bundleCards.length > 0) {
-    bundleCards[0].classList.add('selected');
-  }
-  // Select first order bundle option
-  if (orderBundleOptions.length > 0) {
-    orderBundleOptions[0].classList.add('selected');
-  }
-  // Select first thumbnail
-  if (thumbs.length > 0) {
-    thumbs[0].classList.add('active');
-  }
-
-  updatePriceSummary();
+  // ─── Initial syncs ───
+  syncFixedPrice();
 
 });
