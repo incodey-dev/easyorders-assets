@@ -120,3 +120,8 @@ button#x-checkout-btn {
 button#x-checkout-btn:hover {
     background: #d1032c;
 }
+
+#hero .left-side .main-content .discount .percentage, .discount .percentage {
+    color: #E63054;
+    background-color: #fddee7;
+}
