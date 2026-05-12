@@ -2449,3 +2449,14 @@ button#x-checkout-btn:hover,
     padding-bottom: 0;
   }
 }
+
+#checkout-form input, #checkout-form select, #checkout-form textarea {
+   padding: 0px 40px 0px 0px !important;
+}
+
+.order-section span.text-skin-primary {
+    color: #c8956c !important;
+}
+.product-thumbnails, .thumbnails-container.product-thumbnails {
+   padding: 10px 10px 10px 0px;
+}
