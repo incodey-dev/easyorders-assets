@@ -141,3 +141,13 @@ button#x-checkout-btn:hover {
 #hero .choosing .order-now:hover {
     background: #bb2341 !important;;
 }
+
+#footer {
+    margin-bottom: 0;
+    padding: 100px 0px;
+    background-color: #f4f4f4 !important;
+}
+
+#footer .content .top {
+    background-color: rgb(255 240 244);
+}
