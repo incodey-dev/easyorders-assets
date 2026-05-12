@@ -131,8 +131,13 @@ button#x-checkout-btn:hover {
 
 #hero .choosing .order-now {
     box-shadow: none;
+    background-color: #E63054;
 }
 
 .accordion-element .accordion-butn .btn-title .right img {
     background-color: rgb(255 224 232);
+}
+
+#hero .choosing .order-now:hover {
+    background: #bb2341;
 }
