@@ -1,254 +1,252 @@
 /* =========================================
    PREMIUM ARABIC COSMETICS FUNNEL — JS
-   Version: 2.1 — EasyOrders Compatible
+   Version: 2.2.0 — EasyOrders Compatible
    Pure Vanilla JS — No Dependencies
+   Architecture: Delegated Events + Idempotent Init
    ========================================= */
 
-document.addEventListener('DOMContentLoaded', function () {
+(function () {
+  'use strict';
 
-  // ─── IntersectionObserver — Section Reveal ───
-  var revealSections = document.querySelectorAll('.section-reveal');
-  if (revealSections.length) {
-    var revealObserver = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          revealObserver.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  var VERSION = '2.2.0';
+  var delegatedBound = false;
+  var countdownInterval = null;
 
-    revealSections.forEach(function (section) { revealObserver.observe(section); });
+  // ─── Version marker for debugging ───
+  document.documentElement.setAttribute('data-luniva-funnel-js', VERSION);
+
+  // ─── Robust ready helper ───
+  function ready(fn) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', fn, { once: true });
+    } else {
+      fn();
+    }
+    window.addEventListener('load', fn, { once: true });
+    setTimeout(fn, 500);
+    setTimeout(fn, 1500);
   }
 
-  // ─── Header — Scroll Glassmorphism ───
-  var header = document.querySelector('.site-header');
-  if (header) {
-    function onHeaderScroll() {
+  // ─── Main Init (idempotent) ───
+  function initFunnel() {
+    bindDelegatedEventsOnce();
+    initReveal();
+    initHeaderScroll();
+    initCountdown();
+    initStickyBar();
+    initCounters();
+    initScarcity();
+    initPriceSync();
+    syncProductTitleSafe();
+  }
+
+  // ═══════════════════════════════════════
+  // DELEGATED EVENTS — survive EasyOrders hydration
+  // ═══════════════════════════════════════
+  function bindDelegatedEventsOnce() {
+    if (delegatedBound) return;
+    delegatedBound = true;
+
+    document.addEventListener('click', function (e) {
+      handleFaqClick(e);
+      handleReviewFilterClick(e);
+      handleLoadMoreReviewsClick(e);
+      handleGalleryThumbClick(e);
+      handleSmoothScrollClick(e);
+    }, true);
+  }
+
+  // ─── FAQ Accordion (delegated) ───
+  function handleFaqClick(e) {
+    var target = e.target.closest('.faq-question');
+    if (!target) return;
+
+    var item = target.closest('.faq-item');
+    if (!item) return;
+
+    var isOpen = item.classList.contains('open');
+
+    // Close all open FAQ items
+    var openItems = document.querySelectorAll('.faq-item.open');
+    for (var i = 0; i < openItems.length; i++) {
+      openItems[i].classList.remove('open');
+    }
+
+    // Toggle clicked
+    if (!isOpen) {
+      item.classList.add('open');
+    }
+  }
+
+  // ─── Review Filter Tabs (delegated) ───
+  function handleReviewFilterClick(e) {
+    var pill = e.target.closest('.review-filters .filter-pill');
+    if (!pill) return;
+
+    // Update active pill
+    var pills = document.querySelectorAll('.review-filters .filter-pill');
+    for (var i = 0; i < pills.length; i++) {
+      pills[i].classList.remove('active');
+    }
+    pill.classList.add('active');
+
+    var category = pill.getAttribute('data-filter');
+    var cards = document.querySelectorAll('.reviews-masonry .review-card');
+
+    for (var j = 0; j < cards.length; j++) {
+      var card = cards[j];
+      // Don't touch hidden-card display logic from load-more
+      var isHiddenByDefault = card.classList.contains('hidden-card') && card.classList.contains('is-hidden-by-default');
+
+      if (category === 'all' || card.getAttribute('data-category') === category) {
+        // Show card (unless it's hidden by default load-more)
+        if (!isHiddenByDefault) {
+          card.classList.remove('is-hidden-by-filter');
+          card.classList.add('is-visible-review');
+        }
+      } else {
+        // Hide by filter
+        card.classList.add('is-hidden-by-filter');
+        card.classList.remove('is-visible-review');
+      }
+    }
+  }
+
+  // ─── Load More Reviews (delegated) ───
+  function handleLoadMoreReviewsClick(e) {
+    var btn = e.target.closest('.load-more-reviews button');
+    if (!btn) return;
+
+    var hiddenCards = document.querySelectorAll('.review-card.hidden-card.is-hidden-by-default');
+    var shown = 0;
+    for (var i = 0; i < hiddenCards.length; i++) {
+      if (shown < 3) {
+        var card = hiddenCards[i];
+        card.classList.remove('is-hidden-by-default');
+        shown++;
+      }
+    }
+
+    // Check remaining
+    var remaining = document.querySelectorAll('.review-card.hidden-card.is-hidden-by-default');
+    if (remaining.length === 0) {
+      btn.style.display = 'none';
+    }
+  }
+
+  // ─── Gallery Thumbnail Click (delegated) ───
+  function handleGalleryThumbClick(e) {
+    var thumb = e.target.closest('.thumb, .thumbnail-item');
+    if (!thumb) return;
+
+    // Must be inside the product gallery
+    var thumbsContainer = thumb.closest('.product-thumbnails, .thumbnails-container');
+    if (!thumbsContainer) return;
+
+    // Update active states on thumbs
+    var allThumbs = thumbsContainer.querySelectorAll('.thumb, .thumbnail-item');
+    for (var i = 0; i < allThumbs.length; i++) {
+      allThumbs[i].classList.remove('active');
+    }
+    thumb.classList.add('active');
+
+    // Update main image carousel
+    var slideIndex = thumb.getAttribute('data-bs-slide-to');
+    if (slideIndex !== null) {
+      var mainImageContainer = document.querySelector('.product-main-image, .carousel-container.product-main-image');
+      if (!mainImageContainer) return;
+      var items = mainImageContainer.querySelectorAll('.carousel-item');
+      for (var j = 0; j < items.length; j++) {
+        items[j].classList.remove('active');
+      }
+      var targetItem = items[parseInt(slideIndex, 10)];
+      if (targetItem) targetItem.classList.add('active');
+    }
+  }
+
+  // ─── Smooth Scroll for Anchor Links (delegated) ───
+  function handleSmoothScrollClick(e) {
+    var anchor = e.target.closest('a[href^="#"]');
+    if (!anchor) return;
+
+    var href = anchor.getAttribute('href');
+    if (!href || href === '#') return;
+
+    var target = document.querySelector(href);
+    if (target) {
+      e.preventDefault();
+      var offset = 80;
+      var top = target.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top: top, behavior: 'smooth' });
+    }
+  }
+
+  // ═══════════════════════════════════════
+  // SECTION REVEAL — IntersectionObserver
+  // ═══════════════════════════════════════
+  function initReveal() {
+    var sections = document.querySelectorAll('.section-reveal:not(.visible)');
+    if (!sections.length) return;
+
+    var observer = new IntersectionObserver(function (entries) {
+      for (var i = 0; i < entries.length; i++) {
+        if (entries[i].isIntersecting) {
+          entries[i].target.classList.add('visible');
+          observer.unobserve(entries[i].target);
+        }
+      }
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    for (var i = 0; i < sections.length; i++) {
+      observer.observe(sections[i]);
+    }
+  }
+
+  // ═══════════════════════════════════════
+  // HEADER — Scroll Glassmorphism
+  // ═══════════════════════════════════════
+  function initHeaderScroll() {
+    var header = document.querySelector('.site-header');
+    if (!header) return;
+
+    function onScroll() {
       if (window.scrollY > 40) {
         header.classList.add('scrolled');
       } else {
         header.classList.remove('scrolled');
       }
     }
-    window.addEventListener('scroll', onHeaderScroll, { passive: true });
-    onHeaderScroll();
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
   }
 
-  // ─── Smooth Scroll for Anchor Links ───
-  document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
-    anchor.addEventListener('click', function (e) {
-      var href = this.getAttribute('href');
-      if (!href || href === '#') return;
-      var target = document.querySelector(href);
-      if (target) {
-        e.preventDefault();
-        var offset = 80;
-        var top = target.getBoundingClientRect().top + window.scrollY - offset;
-        window.scrollTo({ top: top, behavior: 'smooth' });
-      }
-    });
-  });
+  // ═══════════════════════════════════════
+  // COUNTDOWN TIMER — robust with localStorage fallback
+  // ═══════════════════════════════════════
+  function initCountdown() {
+    var countdownTimer = document.querySelector('.upsell-countdown .countdown-timer');
+    if (!countdownTimer) return;
 
-  // ─── EasyOrders Gallery — Thumbnail Click (event delegation) ───
-  // Works with Mustache-rendered images after initMustache()
-  function initGalleryThumbs() {
-    var thumbsContainer = document.querySelector('.product-thumbnails');
-    var mainImageContainer = document.querySelector('.product-main-image');
-    if (!thumbsContainer || !mainImageContainer) return;
-
-    thumbsContainer.addEventListener('click', function (e) {
-      var thumb = e.target.closest('.thumb');
-      if (!thumb) return;
-
-      // Update active states
-      thumbsContainer.querySelectorAll('.thumb').forEach(function (t) {
-        t.classList.remove('active');
-      });
-      thumb.classList.add('active');
-
-      // Update main image carousel
-      var slideIndex = thumb.getAttribute('data-bs-slide-to');
-      if (slideIndex !== null) {
-        var items = mainImageContainer.querySelectorAll('.carousel-item');
-        items.forEach(function (item) { item.classList.remove('active'); });
-        var targetItem = items[parseInt(slideIndex, 10)];
-        if (targetItem) targetItem.classList.add('active');
-      }
-    });
-  }
-  initGalleryThumbs();
-
-  // Re-initialize after EasyOrders Mustache renders
-  // Watch for DOM changes inside the gallery
-  var galleryEl = document.getElementById('carouselExampleIndicators');
-  if (galleryEl) {
-    var galleryObserver = new MutationObserver(function () {
-      initGalleryThumbs();
-      syncFixedPrice();
-    });
-    galleryObserver.observe(galleryEl, { childList: true, subtree: true });
-  }
-
-  // ─── Sync Fixed Price from EasyOrders-rendered price ───
-  function syncFixedPrice() {
-    var salePriceEl = document.getElementById('salePrice');
-    var basePriceEl = document.getElementById('basePrice');
-    var fixedSale = document.getElementById('salePrice-fixed');
-    var fixedBase = document.getElementById('basePrice-fixed');
-
-    if (salePriceEl && fixedSale) {
-      fixedSale.textContent = salePriceEl.textContent;
+    // Clear any previous interval
+    if (window.__lunivaCountdownInterval) {
+      clearInterval(window.__lunivaCountdownInterval);
     }
-    if (basePriceEl && fixedBase) {
-      fixedBase.textContent = basePriceEl.textContent;
-    }
-  }
 
-  // Also observe the price block for EasyOrders updates
-  var priceBlock = document.getElementById('price');
-  if (priceBlock) {
-    var priceObserver = new MutationObserver(function () {
-      syncFixedPrice();
-    });
-    priceObserver.observe(priceBlock, { childList: true, subtree: true, characterData: true });
-  }
+    var STORAGE_KEY = 'luniva_funnel_countdown_end';
+    var endTime;
 
-  // ─── FAQ Accordion ───
-  document.querySelectorAll('.faq-question').forEach(function (question) {
-    question.addEventListener('click', function () {
-      var item = this.closest('.faq-item');
-      if (!item) return;
-      var isOpen = item.classList.contains('open');
-
-      // Close all
-      document.querySelectorAll('.faq-item.open').forEach(function (openItem) {
-        openItem.classList.remove('open');
-      });
-
-      // Open clicked (if was closed)
-      if (!isOpen) {
-        item.classList.add('open');
+    try {
+      endTime = localStorage.getItem(STORAGE_KEY);
+      if (!endTime) {
+        endTime = Date.now() + 24 * 60 * 60 * 1000;
+        localStorage.setItem(STORAGE_KEY, endTime);
+      } else {
+        endTime = parseInt(endTime, 10);
       }
-    });
-  });
-
-  // ─── Review Filter Tabs ───
-  var filterPills = document.querySelectorAll('.review-filters .filter-pill');
-  var reviewCards = document.querySelectorAll('.review-card');
-
-  filterPills.forEach(function (pill) {
-    pill.addEventListener('click', function () {
-      filterPills.forEach(function (p) { p.classList.remove('active'); });
-      this.classList.add('active');
-
-      var category = this.dataset.filter;
-      reviewCards.forEach(function (card) {
-        if (category === 'all' || card.dataset.category === category) {
-          card.style.display = '';
-          card.style.opacity = '0';
-          card.style.transform = 'translateY(10px)';
-          requestAnimationFrame(function () {
-            card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-            card.style.opacity = '1';
-            card.style.transform = 'translateY(0)';
-          });
-        } else {
-          card.style.display = 'none';
-        }
-      });
-    });
-  });
-
-  // ─── Load More Reviews ───
-  var loadMoreBtn = document.querySelector('.load-more-reviews button');
-  if (loadMoreBtn) {
-    loadMoreBtn.addEventListener('click', function () {
-      var hiddenCards = document.querySelectorAll('.review-card.hidden-card');
-      var shown = 0;
-      hiddenCards.forEach(function (card) {
-        if (shown < 3) {
-          card.classList.remove('hidden-card');
-          card.style.display = '';
-          card.style.opacity = '0';
-          card.style.transform = 'translateY(15px)';
-          requestAnimationFrame(function () {
-            card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-            card.style.opacity = '1';
-            card.style.transform = 'translateY(0)';
-          });
-          shown++;
-        }
-      });
-      var remaining = document.querySelectorAll('.review-card.hidden-card');
-      if (remaining.length === 0) {
-        loadMoreBtn.style.display = 'none';
-      }
-    });
-  }
-
-  // ─── Stats Counter Animation ───
-  var statsNumbers = document.querySelectorAll('.trust-number[data-count]');
-  if (statsNumbers.length) {
-    var statsObserver = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          var el = entry.target;
-          var target = parseInt(el.dataset.count, 10);
-          animateCounter(el, 0, target, 1500);
-          statsObserver.unobserve(el);
-        }
-      });
-    }, { threshold: 0.5 });
-
-    statsNumbers.forEach(function (el) { statsObserver.observe(el); });
-  }
-
-  function animateCounter(el, start, end, duration) {
-    var startTime = performance.now();
-    function update(currentTime) {
-      var elapsed = currentTime - startTime;
-      var progress = Math.min(elapsed / duration, 1);
-      var eased = 1 - Math.pow(1 - progress, 3);
-      var current = Math.round(start + (end - start) * eased);
-      el.textContent = current.toLocaleString('ar-EG');
-      if (progress < 1) {
-        requestAnimationFrame(update);
-      }
-    }
-    requestAnimationFrame(update);
-  }
-
-  // ─── Stock Progress Bar Animation ───
-  var scarcityFill = document.querySelector('.scarcity-fill');
-  if (scarcityFill) {
-    var scarcityParent = scarcityFill.closest('.stock-scarcity');
-    if (scarcityParent) {
-      var scarcityObserver = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            setTimeout(function () {
-              scarcityFill.style.width = scarcityFill.dataset.fill + '%';
-            }, 300);
-            scarcityObserver.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.3 });
-      scarcityObserver.observe(scarcityParent);
-    }
-  }
-
-  // ─── Countdown Timer (24h from first visit, localStorage) ───
-  var countdownTimer = document.querySelector('.upsell-countdown .countdown-timer');
-  if (countdownTimer) {
-    var STORAGE_KEY = 'funnel_countdown_end';
-    var endTime = localStorage.getItem(STORAGE_KEY);
-
-    if (!endTime) {
+    } catch (e) {
+      // localStorage blocked (private browser, iframe, etc.)
       endTime = Date.now() + 24 * 60 * 60 * 1000;
-      localStorage.setItem(STORAGE_KEY, endTime);
-    } else {
-      endTime = parseInt(endTime, 10);
     }
 
     var hoursEl = countdownTimer.querySelector('.hours-value');
@@ -270,19 +268,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
       if (diff <= 0) {
         endTime = Date.now() + 24 * 60 * 60 * 1000;
-        localStorage.setItem(STORAGE_KEY, endTime);
+        try {
+          localStorage.setItem(STORAGE_KEY, endTime);
+        } catch (e) {
+          // Ignore storage errors
+        }
       }
     }
 
     updateCountdown();
-    setInterval(updateCountdown, 1000);
+    window.__lunivaCountdownInterval = setInterval(updateCountdown, 1000);
   }
 
-  // ─── Mobile Sticky CTA Bar ───
-  var mobileBar = document.querySelector('.mobile-sticky-bar');
-  if (mobileBar && window.innerWidth <= 768) {
+  // ═══════════════════════════════════════
+  // MOBILE STICKY CTA BAR
+  // ═══════════════════════════════════════
+  function initStickyBar() {
+    var mobileBar = document.querySelector('.mobile-sticky-bar');
+    if (!mobileBar) return;
+
     var stickyThreshold = 500;
-    window.addEventListener('scroll', function () {
+    var scrollHandlerBound = false;
+
+    function onScroll() {
       if (window.scrollY > stickyThreshold) {
         mobileBar.classList.add('visible');
         document.body.classList.add('sticky-bar-active');
@@ -290,23 +298,181 @@ document.addEventListener('DOMContentLoaded', function () {
         mobileBar.classList.remove('visible');
         document.body.classList.remove('sticky-bar-active');
       }
-    }, { passive: true });
-  }
+    }
 
-  // ─── Parallax Hero (subtle, desktop only) ───
-  var heroImage = document.querySelector('.hero-image-placeholder');
-  if (heroImage && window.innerWidth > 768) {
-    window.addEventListener('scroll', function () {
-      var scrollY = window.scrollY;
-      if (scrollY < window.innerHeight) {
-        heroImage.style.transform = 'translateY(' + (scrollY * 0.12) + 'px)';
+    if (window.innerWidth <= 768) {
+      window.addEventListener('scroll', onScroll, { passive: true });
+      scrollHandlerBound = true;
+      onScroll();
+    }
+
+    // Handle resize
+    window.addEventListener('resize', function () {
+      if (window.innerWidth <= 768 && !scrollHandlerBound) {
+        window.addEventListener('scroll', onScroll, { passive: true });
+        scrollHandlerBound = true;
+        onScroll();
       }
     }, { passive: true });
   }
 
-  // ─── Viewing Count (simulated) ───
-  var viewingEl = document.querySelector('.viewing-count');
-  if (viewingEl) {
+  // ═══════════════════════════════════════
+  // STATS COUNTER ANIMATION
+  // ═══════════════════════════════════════
+  function initCounters() {
+    var statsNumbers = document.querySelectorAll('.trust-number[data-count]');
+    if (!statsNumbers.length) return;
+
+    var observer = new IntersectionObserver(function (entries) {
+      for (var i = 0; i < entries.length; i++) {
+        if (entries[i].isIntersecting) {
+          var el = entries[i].target;
+          var target = parseInt(el.getAttribute('data-count'), 10);
+          animateCounter(el, 0, target, 1500);
+          observer.unobserve(el);
+        }
+      }
+    }, { threshold: 0.5 });
+
+    for (var i = 0; i < statsNumbers.length; i++) {
+      observer.observe(statsNumbers[i]);
+    }
+  }
+
+  function animateCounter(el, start, end, duration) {
+    var startTime = performance.now();
+    function update(currentTime) {
+      var elapsed = currentTime - startTime;
+      var progress = Math.min(elapsed / duration, 1);
+      var eased = 1 - Math.pow(1 - progress, 3);
+      var current = Math.round(start + (end - start) * eased);
+      el.textContent = current.toLocaleString('ar-EG');
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      }
+    }
+    requestAnimationFrame(update);
+  }
+
+  // ═══════════════════════════════════════
+  // STOCK SCARCITY BAR
+  // ═══════════════════════════════════════
+  function initScarcity() {
+    var scarcityFill = document.querySelector('.scarcity-fill');
+    if (!scarcityFill) return;
+
+    var scarcityParent = scarcityFill.closest('.stock-scarcity');
+    if (!scarcityParent) return;
+
+    // Only animate if not already animated
+    if (scarcityFill.style.width && scarcityFill.style.width !== '0px') return;
+
+    var observer = new IntersectionObserver(function (entries) {
+      for (var i = 0; i < entries.length; i++) {
+        if (entries[i].isIntersecting) {
+          var fillValue = scarcityFill.getAttribute('data-fill');
+          if (fillValue) {
+            setTimeout(function () {
+              scarcityFill.style.width = fillValue + '%';
+            }, 300);
+          }
+          observer.unobserve(entries[i].target);
+        }
+      }
+    }, { threshold: 0.3 });
+
+    observer.observe(scarcityParent);
+  }
+
+  // ═══════════════════════════════════════
+  // PRICE SYNC — sticky bar from #price
+  // ═══════════════════════════════════════
+  function initPriceSync() {
+    syncFixedPrice();
+
+    // Observe #price for EasyOrders updates
+    var priceBlock = document.getElementById('price');
+    if (priceBlock && !priceBlock.__lunivaObserved) {
+      priceBlock.__lunivaObserved = true;
+      var priceObserver = new MutationObserver(function () {
+        syncFixedPrice();
+      });
+      priceObserver.observe(priceBlock, { childList: true, subtree: true, characterData: true });
+    }
+
+    // Also watch gallery render for price sync
+    var galleryEl = document.getElementById('carouselExampleIndicators');
+    if (galleryEl && !galleryEl.__lunivaPriceObserved) {
+      galleryEl.__lunivaPriceObserved = true;
+      var galleryObserver = new MutationObserver(function () {
+        syncFixedPrice();
+      });
+      galleryObserver.observe(galleryEl, { childList: true, subtree: true });
+    }
+  }
+
+  function syncFixedPrice() {
+    // Use scoped selectors — never global getElementById for potentially duplicated IDs
+    var salePriceEl = document.querySelector('#price #salePrice');
+    var basePriceEl = document.querySelector('#price #basePrice');
+    var fixedSale = document.getElementById('salePrice-fixed');
+    var fixedBase = document.getElementById('basePrice-fixed');
+
+    if (salePriceEl && fixedSale && salePriceEl.textContent.trim()) {
+      fixedSale.textContent = salePriceEl.textContent;
+    }
+    if (basePriceEl && fixedBase && basePriceEl.textContent.trim()) {
+      fixedBase.textContent = basePriceEl.textContent;
+    }
+  }
+
+  // ═══════════════════════════════════════
+  // PRODUCT TITLE — safe best-effort sync
+  // ═══════════════════════════════════════
+  // EasyOrders funnel docs do not document an official dynamic product-title hook.
+  // We attempt safe sync from already-rendered page data only.
+  // No API calls, no API keys, no client-side EasyOrders API.
+  function syncProductTitleSafe() {
+    var titleEl = document.getElementById('eo-product-title');
+    if (!titleEl) return;
+
+    // Strategy 1: Check if EasyOrders rendered a product title element elsewhere
+    var eoTitle = document.querySelector('[data-vvveb-disabled] .product-title, .eo-product-title, #eo-product-name');
+    if (eoTitle && eoTitle.textContent.trim()) {
+      titleEl.textContent = eoTitle.textContent.trim();
+      return;
+    }
+
+    // Strategy 2: Check document.title / meta og:title if it clearly contains product name
+    var metaOgTitle = document.querySelector('meta[property="og:title"]');
+    if (metaOgTitle && metaOgTitle.getAttribute('content')) {
+      var ogContent = metaOgTitle.getAttribute('content').trim();
+      // Only use if it's not the generic site title
+      if (ogContent && ogContent !== document.title && ogContent.length < 100) {
+        // Don't override if current text already looks like a product name
+        if (!titleEl.textContent.trim() || titleEl.textContent.trim() === 'سيروم التوهج المطفّر') {
+          // og:title might include site name suffix, but we can't parse reliably — skip unless very short
+        }
+      }
+    }
+
+    // Strategy 3: Check for global EasyOrders page data
+    // (Only if EasyOrders exposes window.__EO_PRODUCT__ or similar)
+    if (window.__EO_PRODUCT__ && window.__EO_PRODUCT__.name) {
+      titleEl.textContent = window.__EO_PRODUCT__.name;
+      return;
+    }
+
+    // Fallback: keep the existing editable text inside the element
+  }
+
+  // ═══════════════════════════════════════
+  // VIEWING COUNT (simulated)
+  // ═══════════════════════════════════════
+  function initViewing() {
+    var viewingEl = document.querySelector('.viewing-count');
+    if (!viewingEl) return;
+
     function updateViewing() {
       var count = Math.floor(Math.random() * 20) + 35;
       viewingEl.textContent = count;
@@ -315,7 +481,16 @@ document.addEventListener('DOMContentLoaded', function () {
     setInterval(updateViewing, 15000);
   }
 
-  // ─── Initial syncs ───
-  syncFixedPrice();
+  // ═══════════════════════════════════════
+  // BOOT
+  // ═══════════════════════════════════════
+  ready(initFunnel);
+  ready(initViewing);
 
-});
+  // Re-init when EasyOrders gallery renders
+  window.addEventListener('eo:gallery-rendered', function () {
+    initPriceSync();
+    syncProductTitleSafe();
+  });
+
+})();
