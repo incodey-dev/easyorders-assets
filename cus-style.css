@@ -1,6 +1,6 @@
 /* =========================================
    PREMIUM ARABIC COSMETICS FUNNEL
-   Version: 2.1 — EasyOrders Compatible
+   Version: 2.2.0 — EasyOrders Compatible
    Direction: RTL
    Design: Editorial Luxury
    ========================================= */
@@ -56,7 +56,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   max-width: 100vw;
-  /* Bottom padding for mobile sticky CTA */
   padding-bottom: 0;
 }
 
@@ -414,23 +413,30 @@ button, input, select, textarea {
   justify-content: center;
   align-items: center;
 }
+
+/* Hero image — NO parallax, NO fixed position */
 .hero-image-placeholder {
   width: 100%;
   aspect-ratio: 4/5;
   max-width: 520px;
   background: linear-gradient(145deg, var(--color-surface-alt) 0%, var(--color-highlight) 100%);
   border-radius: var(--radius-xl);
-  position: relative;
+  position: relative !important;
   overflow: hidden;
   box-shadow: var(--shadow-xl);
+  transform: none !important;
+  inset: auto !important;
 }
 .hero-main-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: var(--radius-xl);
-  position: relative;
+  position: relative !important;
+  inset: auto !important;
+  transform: none !important;
   z-index: 1;
+  display: block;
 }
 .hero-image-placeholder .watermark {
   position: absolute;
@@ -537,7 +543,8 @@ button, input, select, textarea {
 .eo-product-gallery {
   position: relative;
 }
-.product-main-image {
+.product-main-image,
+.carousel-container.product-main-image {
   width: 100%;
   aspect-ratio: 4/5;
   background: linear-gradient(145deg, var(--color-surface-alt) 0%, var(--color-highlight) 100%);
@@ -570,7 +577,8 @@ button, input, select, textarea {
   font-weight: 700;
   z-index: 2;
 }
-.product-thumbnails {
+.product-thumbnails,
+.thumbnails-container.product-thumbnails {
   display: flex;
   gap: 10px;
   margin-top: 14px;
@@ -578,11 +586,18 @@ button, input, select, textarea {
   padding-bottom: 4px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  list-style: none;
+  padding-right: 0;
+  margin-right: 0;
 }
-.product-thumbnails::-webkit-scrollbar {
+.product-thumbnails::-webkit-scrollbar,
+.thumbnails-container.product-thumbnails::-webkit-scrollbar {
   display: none;
 }
-.product-thumbnails .thumb {
+.product-thumbnails .thumb,
+.product-thumbnails .thumbnail-item,
+.thumbnails-container .thumb,
+.thumbnails-container .thumbnail-item {
   width: 68px;
   height: 68px;
   min-width: 68px;
@@ -593,11 +608,20 @@ button, input, select, textarea {
   transition: border-color var(--transition-fast), transform var(--transition-fast);
 }
 .product-thumbnails .thumb.active,
-.product-thumbnails .thumb:hover {
+.product-thumbnails .thumb:hover,
+.product-thumbnails .thumbnail-item.active,
+.product-thumbnails .thumbnail-item:hover,
+.thumbnails-container .thumb.active,
+.thumbnails-container .thumb:hover,
+.thumbnails-container .thumbnail-item.active,
+.thumbnails-container .thumbnail-item:hover {
   border-color: var(--color-accent);
   transform: scale(1.05);
 }
-.product-thumbnails .thumb img {
+.product-thumbnails .thumb img,
+.product-thumbnails .thumbnail-item img,
+.thumbnails-container .thumb img,
+.thumbnails-container .thumbnail-item img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -666,12 +690,14 @@ button, input, select, textarea {
   font-size: 1.1rem;
   color: var(--color-muted);
   text-decoration: line-through;
+  margin: 0;
 }
 .product-price-block .new-price,
 .product-price-block #salePrice {
   font-size: 2rem;
   font-weight: 800;
   color: var(--color-accent);
+  margin: 0;
 }
 .product-price-block .savings-badge,
 .product-price-block #discountPercent {
@@ -756,29 +782,111 @@ button, input, select, textarea {
   color: var(--color-accent);
 }
 
-/* Checkout Button */
-.order-now-btn {
-  display: block;
+/* =========================================
+   CHECKOUT BUTTON — ROBUST PUBLIC STYLING
+   Use shared class + specific IDs
+   ========================================= */
+a#x-checkout-btn,
+button#x-checkout-btn,
+.eo-checkout-button,
+.order-now-btn,
+.product-cta-group .btn-primary {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   width: 100%;
-  padding: 16px 24px;
-  background: var(--color-cta);
-  color: #fff;
-  border-radius: var(--radius-pill);
-  font-size: 1.05rem;
-  font-weight: 700;
-  text-align: center;
-  cursor: pointer;
-  transition: background var(--transition-fast);
+  min-height: 54px;
+  padding: 15px 24px !important;
+  border-radius: var(--radius-pill) !important;
+  background: var(--color-cta) !important;
+  color: #fff !important;
+  border: 2px solid var(--color-cta) !important;
+  font-size: 1.05rem !important;
+  font-weight: 800 !important;
+  line-height: 1.3 !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  box-shadow: var(--shadow-md);
+  transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
   margin-top: 14px;
+  gap: 8px;
 }
-.order-now-btn:hover {
-  background: var(--color-cta-hover);
+a#x-checkout-btn *,
+button#x-checkout-btn *,
+.eo-checkout-button *,
+.order-now-btn * {
+  color: inherit !important;
+}
+a#x-checkout-btn:hover,
+button#x-checkout-btn:hover,
+.eo-checkout-button:hover,
+.order-now-btn:hover,
+.product-cta-group .btn-primary:hover {
+  background: var(--color-cta-hover) !important;
+  border-color: var(--color-cta-hover) !important;
+  transform: scale(1.02);
 }
 
-/* EasyOrders Checkout Form Styling */
-#x-checkout .form-container {
-  /* Style EasyOrders rendered form fields */
+/* =========================================
+   EASYORDERS CHECKOUT FORM — ROBUST STYLING
+   ========================================= */
+#x-checkout,
+#checkout-form {
+  width: 100%;
 }
+
+/* Scoped reset for EasyOrders injected rows */
+#checkout-form > div,
+#checkout-form .form-group,
+#checkout-form .input-container,
+#checkout-form [class*="input-container"],
+#checkout-form [class*="field"],
+#checkout-form [class*="form"] {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* All form inputs — beat EasyOrders injected styles */
+#checkout-form input,
+#checkout-form select,
+#checkout-form textarea {
+  width: 100% !important;
+  min-height: 52px !important;
+  padding: 14px 16px !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+  background: #fff !important;
+  color: var(--color-text) !important;
+  font-family: var(--font-family) !important;
+  font-size: 16px !important;
+  line-height: 1.4 !important;
+  direction: rtl !important;
+  box-shadow: none !important;
+  box-sizing: border-box !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
+#checkout-form input:focus,
+#checkout-form select:focus,
+#checkout-form textarea:focus {
+  border-color: var(--color-accent) !important;
+  box-shadow: 0 0 0 3px rgba(200, 149, 108, 0.15) !important;
+  outline: none !important;
+}
+
+/* Labels */
+#checkout-form label,
+#checkout-form .label,
+#checkout-form [class*="label"] {
+  color: var(--color-text) !important;
+  font-weight: 600 !important;
+  font-size: 0.9rem !important;
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* Input containers — fallback styling */
 #checkout-form .input-container {
   display: flex;
   align-items: center;
@@ -835,6 +943,44 @@ button, input, select, textarea {
   font-size: 0.85rem;
   color: var(--color-accent-dark);
   flex-shrink: 0;
+}
+
+/* Quantity controls — clean, compact, not pink */
+#checkout-form [class*="quantity"],
+#checkout-form [class*="qty"],
+#checkout-form [class*="Quantity"] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
+}
+#checkout-form [class*="quantity"] button,
+#checkout-form [class*="qty"] button,
+#checkout-form [class*="Quantity"] button {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  font-size: 1.1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+#checkout-form [class*="quantity"] button:hover,
+#checkout-form [class*="qty"] button:hover,
+#checkout-form [class*="Quantity"] button:hover {
+  background: var(--color-highlight);
+  border-color: var(--color-accent);
+  color: var(--color-accent-dark);
 }
 
 .product-cta-group {
@@ -1075,6 +1221,18 @@ button, input, select, textarea {
 .review-card:hover {
   box-shadow: var(--shadow-md);
 }
+
+/* Hidden review cards — CSS class based, not inline style */
+.review-card.hidden-card.is-hidden-by-default {
+  display: none;
+}
+.review-card.is-hidden-by-filter {
+  display: none;
+}
+.review-card.is-visible-review {
+  display: block;
+}
+
 .review-card .reviewer-header {
   display: flex;
   align-items: center;
@@ -1164,7 +1322,7 @@ button, input, select, textarea {
   position: relative;
 }
 
-/* RTL-safe connector line using ::before */
+/* RTL-safe connector line using ::before with inset-inline-start */
 @media (min-width: 769px) {
   .steps-container::before {
     content: "";
@@ -1479,6 +1637,9 @@ button, input, select, textarea {
   transition: color var(--transition-fast);
   gap: 12px;
   min-height: 48px;
+  pointer-events: auto;
+  touch-action: manipulation;
+  user-select: none;
 }
 .faq-question:hover {
   color: var(--color-accent);
@@ -1510,7 +1671,7 @@ button, input, select, textarea {
   transition: max-height 0.4s ease, padding 0.4s ease;
 }
 .faq-item.open .faq-answer {
-  max-height: 300px;
+  max-height: 500px;
   padding: 0 20px 18px;
 }
 .faq-answer p {
@@ -1783,6 +1944,10 @@ button, input, select, textarea {
   transition: background var(--transition-fast);
   border: none;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 }
 .mobile-sticky-bar .bar-cta:hover {
   background: var(--color-cta-hover);
@@ -1826,9 +1991,11 @@ button, input, select, textarea {
     padding: 6px 10px;
     font-size: 0.7rem;
   }
-  .btn-primary {
-    padding: 14px 20px;
-    font-size: 0.95rem;
+  .btn-primary,
+  .eo-checkout-button,
+  .order-now-btn {
+    padding: 14px 20px !important;
+    font-size: 0.95rem !important;
   }
   .trust-bar-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -1849,6 +2016,13 @@ button, input, select, textarea {
   .product-price-block .new-price,
   .product-price-block #salePrice {
     font-size: 1.6rem;
+  }
+  .countdown-unit {
+    min-width: 48px;
+    padding: 8px 10px;
+  }
+  .countdown-unit .unit-value {
+    font-size: 1.2rem;
   }
 }
 
@@ -1994,6 +2168,18 @@ button, input, select, textarea {
     width: 48px;
     height: 48px;
     font-size: 1.3rem;
+  }
+
+  /* Mobile checkout form adjustments */
+  #checkout-form input,
+  #checkout-form select,
+  #checkout-form textarea {
+    font-size: 16px !important; /* Prevent iOS zoom */
+  }
+
+  /* Ensure sticky bar doesn't cover checkout */
+  #order {
+    padding-bottom: 100px;
   }
 }
 
