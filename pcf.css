@@ -1,0 +1,1293 @@
+/* ==========================================
+   PREMIUM COSMETICS FUNNEL — CUSTOM STYLES
+   Luxury Editorial Beauty — Rose Gold Palette
+   Overrides EasyOrders default styling
+   ========================================== */
+
+/* ==========================================
+   1. CSS Variables & Base Reset
+   ========================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Cairo:wght@200..1000&display=swap');
+
+:root {
+  --primary:     #C9847A;   /* dusty rose */
+  --accent:      #E8C4B8;   /* blush */
+  --dark:        #2A1F1D;   /* warm near-black */
+  --bg:          #FDF8F6;   /* warm white */
+  --surface:     #FFF4F1;   /* soft blush card bg */
+  --surface-2:   #FFF0EC;
+  --brand:       #E63054;   /* client CTA brand color */
+  --brand-dark:  #bb2341;
+  --text-main:   #2A1F1D;
+  --text-muted:  #8B7370;
+  --text-light:  #C4ABA7;
+  --border:      #F0E4E0;
+  --shadow-soft: 0 2px 12px rgba(42,31,29,0.07);
+  --shadow-md:   0 8px 32px rgba(42,31,29,0.10);
+  --shadow-lg:   0 20px 60px rgba(42,31,29,0.11);
+  --radius-sm:   12px;
+  --radius-md:   18px;
+  --radius-lg:   24px;
+  --radius-xl:   32px;
+  --serif:       'Cormorant Garamond', Georgia, serif;
+  --sans:        'Cairo', sans-serif;
+  --duration:    0.3s;
+}
+
+/* ==========================================
+   2. Global Base
+   ========================================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--sans);
+  background-color: var(--bg);
+  color: var(--text-main);
+  direction: rtl;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  text-decoration: none;
+  transition: color var(--duration) ease;
+}
+
+img {
+  display: block;
+  object-fit: cover;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--sans);
+  color: var(--text-main);
+  margin: 0;
+}
+
+p {
+  margin: 0;
+  line-height: 1.65;
+}
+
+/* ==========================================
+   3. Header & Navigation
+   ========================================== */
+
+/* Top announcement bar */
+.top-header {
+  background: var(--dark) !important;
+  background-image: none !important;
+  border-radius: 0 !important;
+  padding: 10px 20px !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.top-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(201,132,122,0.12), transparent);
+  pointer-events: none;
+}
+
+.top-header .top-title {
+  gap: 10px;
+}
+
+.top-header .top-title p {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: #fff !important;
+  letter-spacing: 0.3px;
+}
+
+.top-header .top-title .countdown .countdown-item {
+  color: var(--primary) !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.5px;
+}
+
+.top-header .top-title i {
+  color: var(--primary) !important;
+  animation-duration: 1.5s !important;
+}
+
+/* Bottom nav bar */
+.bottom-header {
+  background-color: rgba(253,248,246,0.97) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 1px 0 var(--border), 0 4px 20px rgba(42,31,29,0.05) !important;
+  border-radius: 0 !important;
+  padding: 14px 0 !important;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.bottom-header .logo a {
+  font-size: 20px !important;
+  font-weight: 800 !important;
+  color: var(--dark) !important;
+  letter-spacing: -0.5px;
+}
+
+.bottom-header ul li a {
+  color: var(--text-muted) !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  transition: color var(--duration) ease;
+}
+
+.bottom-header ul li a:hover {
+  color: var(--primary) !important;
+}
+
+.bottom-header .head-btn a {
+  background-color: var(--dark) !important;
+  color: #fff !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 12px 22px !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+  transition: background var(--duration) ease, transform var(--duration) ease;
+  border: none;
+}
+
+.bottom-header .head-btn a:hover {
+  background-color: var(--brand) !important;
+  transform: translateY(-2px) !important;
+}
+
+.bottom-header .head-btn a p,
+.bottom-header .head-btn a i {
+  color: #fff !important;
+}
+
+/* ==========================================
+   4. Main Background
+   ========================================== */
+
+#main {
+  background: var(--bg) !important;
+  background-image: none !important;
+}
+
+/* ==========================================
+   5. Hero Section
+   ========================================== */
+
+#hero {
+  margin-top: 0 !important;
+  padding: 40px 0 60px;
+}
+
+#hero .middle {
+  border-radius: 0 !important;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ==========================================
+   6. Product Images / Carousel
+   ========================================== */
+
+#hero .right-side {
+  width: 46% !important;
+}
+
+#hero .carousel {
+  position: sticky;
+  top: 100px;
+}
+
+#hero .carousel .carousel-inner {
+  border-radius: var(--radius-lg) !important;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+#hero .carousel .carousel-inner .carousel-item img {
+  height: 460px !important;
+  border-radius: var(--radius-lg);
+  transition: transform 0.4s ease !important;
+}
+
+#hero .carousel .carousel-inner .carousel-item img:hover {
+  transform: scale(1.05) !important;
+}
+
+#hero .carousel-indicators {
+  padding: 14px 0 0 !important;
+  gap: 8px;
+  margin: 0 !important;
+}
+
+#hero .carousel-indicators li.thumbnail {
+  border-radius: var(--radius-sm) !important;
+  height: 72px !important;
+  overflow: hidden;
+  opacity: 0.6;
+  transition: opacity var(--duration) ease, box-shadow var(--duration) ease;
+  border: 2px solid transparent;
+}
+
+#hero .carousel-indicators li.thumbnail.active,
+#hero .carousel-indicators li.thumbnail:hover {
+  opacity: 1;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(201,132,122,0.2);
+}
+
+#hero .carousel-indicators li img {
+  border-radius: var(--radius-sm) !important;
+  width: 80px !important;
+  height: 100%;
+}
+
+/* ==========================================
+   7. Left Side — Product Info Card
+   ========================================== */
+
+#hero .left-side {
+  width: 50% !important;
+}
+
+#hero .left-side .main-content {
+  background-color: #fff !important;
+  box-shadow: var(--shadow-md) !important;
+  border-radius: var(--radius-xl) !important;
+  padding: 28px !important;
+  border: 1px solid var(--border);
+}
+
+/* Rating box */
+#hero .left-side .main-content .rating-box {
+  background: linear-gradient(135deg, var(--surface), rgba(255,244,241,0.5)) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 100px !important;
+  padding: 8px 14px !important;
+  display: inline-flex !important;
+  width: auto !important;
+  gap: 8px;
+}
+
+#hero .left-side .main-content .rating-box .photo img {
+  box-shadow: 0 0 0 2px #fff !important;
+  border-radius: 50% !important;
+}
+
+#hero .left-side .main-content .rating-box .left .stars i {
+  color: var(--brand) !important;
+  font-size: 13px !important;
+}
+
+#hero .left-side .main-content .rating-box .left p {
+  color: var(--text-muted) !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+}
+
+/* Product title */
+#hero .left-side .main-content .title h1 {
+  font-size: 26px !important;
+  font-weight: 800 !important;
+  color: var(--dark) !important;
+  line-height: 1.35 !important;
+  margin-top: 18px !important;
+  margin-bottom: 12px !important;
+  letter-spacing: -0.3px;
+}
+
+/* Decorative serif accent for product name */
+#hero .left-side .main-content .title h1::after {
+  content: '';
+  display: block;
+  width: 48px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  margin-top: 10px;
+  border-radius: 2px;
+}
+
+/* Stars in title-box */
+#hero .left-side .main-content .title-box .r i {
+  color: var(--brand) !important;
+  font-size: 16px !important;
+}
+
+#hero .left-side .main-content .title-box .r span {
+  color: var(--brand) !important;
+  font-size: 20px !important;
+}
+
+/* ==========================================
+   8. Price / Discount
+   ========================================== */
+
+#hero .left-side .main-content .discount h4,
+.discount h4 {
+  font-size: 26px !important;
+  font-weight: 900 !important;
+  color: var(--dark) !important;
+  letter-spacing: -0.5px;
+}
+
+#hero .left-side .main-content .discount p,
+.discount p {
+  color: var(--text-light) !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  text-decoration: line-through !important;
+}
+
+#hero .left-side .main-content .discount .percentage,
+.discount .percentage {
+  background-color: rgba(230,48,84,0.1) !important;
+  color: var(--brand) !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  padding: 4px 9px !important;
+  letter-spacing: 0.3px;
+}
+
+/* Description */
+#hero .left-side .main-content .description {
+  color: var(--text-muted) !important;
+  font-size: 15px !important;
+  line-height: 1.7 !important;
+  font-weight: 400 !important;
+  margin-top: 14px !important;
+}
+
+/* ==========================================
+   9. Order Form
+   ========================================== */
+
+#hero .left-side .main-content .choosing .form-container {
+  background-color: var(--surface) !important;
+  background-image: none !important;
+  border-radius: var(--radius-lg) !important;
+  padding: 22px !important;
+  border: 1px solid var(--border);
+  margin-top: 18px;
+}
+
+#hero .left-side .main-content .choosing .title-box p {
+  color: var(--dark) !important;
+  font-size: 17px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.2px;
+}
+
+/* Form input containers */
+#hero .left-side .main-content .form-container form .input-container {
+  background-color: #fff !important;
+  border-radius: var(--radius-sm) !important;
+  box-shadow: none !important;
+  border: 1.5px solid var(--border) !important;
+  padding: 8px 12px !important;
+  transition: border-color var(--duration) ease, box-shadow var(--duration) ease;
+  margin-bottom: 10px !important;
+}
+
+#hero .left-side .main-content .form-container form .input-container:focus-within {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(201,132,122,0.15) !important;
+}
+
+#hero .left-side .main-content .form-container form .input-container img {
+  background-color: var(--surface) !important;
+  border-radius: 8px !important;
+  padding: 6px !important;
+  height: 34px !important;
+}
+
+#hero .left-side .main-content .form-container form .input-container .input-box input {
+  font-size: 15px !important;
+  color: var(--dark) !important;
+  font-weight: 500 !important;
+  padding: 4px 8px !important;
+}
+
+#hero .left-side .main-content .form-container form .input-container .input-box input::placeholder {
+  color: var(--text-light) !important;
+}
+
+/* ==========================================
+   10. Bundle Picker / Accordion
+   ========================================== */
+
+#hero .left-side .main-content .choosing .radio-container {
+  row-gap: 12px !important;
+  margin-top: 16px !important;
+}
+
+/* Bundle cards */
+.accordion-element {
+  border-radius: var(--radius-md) !important;
+  box-shadow: none !important;
+  border: 1.5px solid var(--border) !important;
+  background: #fff !important;
+  transition: border-color var(--duration) ease, transform var(--duration) ease, box-shadow var(--duration) ease !important;
+  margin-bottom: 10px !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.accordion-element:hover {
+  border-color: var(--primary) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(201,132,122,0.15) !important;
+}
+
+/* Selected/checked state */
+.accordion-element:has(input:checked) {
+  border-color: var(--brand) !important;
+  background: linear-gradient(135deg, rgba(230,48,84,0.04), rgba(255,244,241,0.8)) !important;
+  box-shadow: 0 4px 18px rgba(230,48,84,0.12) !important;
+}
+
+.accordion-element .accordion-butn .btn-title {
+  padding: 16px !important;
+  transition: all var(--duration) ease;
+}
+
+.accordion-element .accordion-butn .btn-title .right {
+  gap: 10px;
+}
+
+.accordion-element label {
+  font-size: 16px !important;
+  color: var(--dark) !important;
+  font-weight: 700 !important;
+}
+
+/* Radio input styling */
+.accordion-element input[type="radio"] {
+  accent-color: var(--brand);
+  width: 18px !important;
+  height: 18px !important;
+}
+
+/* Price in bundle */
+#hero .accordion-btn {
+  display: none; /* replaced by accordion-element itself */
+}
+
+.accordion-element .accordion-butn .btn-title .price {
+  font-size: 18px !important;
+  color: var(--dark) !important;
+  font-weight: 800 !important;
+}
+
+.accordion-element .accordion-butn .btn-title span {
+  color: var(--text-light) !important;
+  font-size: 14px !important;
+}
+
+/* Best offer badge */
+.accordion-element .best-offer {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: auto !important;
+  margin: 0 !important;
+  width: auto !important;
+  padding: 4px 12px !important;
+  border-radius: 0 0 var(--radius-sm) 0 !important;
+}
+
+.accordion-element .best {
+  background: linear-gradient(135deg, var(--brand), #ff6b8a) !important;
+}
+
+.accordion-element .more {
+  background: linear-gradient(135deg, #4ABDB7, #34B3AC) !important;
+}
+
+.accordion-element .best-offer h6 {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #fff !important;
+  letter-spacing: 0.5px;
+}
+
+/* Icon bg in bundle */
+.accordion-element .accordion-butn .btn-title .right img {
+  background-color: var(--surface) !important;
+  border-radius: 10px !important;
+  padding: 6px !important;
+}
+
+/* Hover on accordion button */
+.accordion-butn:hover {
+  background-color: transparent !important;
+}
+
+/* ==========================================
+   11. Total Price Display
+   ========================================== */
+
+#hero .choosing .total-price {
+  background: linear-gradient(135deg, var(--surface), #fff) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 10px 14px !important;
+}
+
+#hero .choosing .total-price p {
+  color: var(--text-muted) !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+
+#hero .choosing .total-price span {
+  color: var(--dark) !important;
+  font-size: 20px !important;
+  font-weight: 900 !important;
+}
+
+/* ==========================================
+   12. CTA Button
+   ========================================== */
+
+#hero .choosing .order-now,
+button#x-checkout-btn {
+  background: var(--brand) !important;
+  background-image: linear-gradient(135deg, var(--brand), #f0405f) !important;
+  color: #fff !important;
+  border-radius: var(--radius-sm) !important;
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  padding: 18px 24px !important;
+  border: none !important;
+  width: 100% !important;
+  cursor: pointer;
+  letter-spacing: 0.2px;
+  transition: transform var(--duration) ease, box-shadow var(--duration) ease !important;
+  box-shadow: 0 6px 24px rgba(230,48,84,0.35) !important;
+  animation: ctaPulse 2.5s ease-in-out infinite !important;
+  animation-name: ctaPulse !important;
+  animation-iteration-count: infinite !important;
+  animation-duration: 2.5s !important;
+  animation-timing-function: ease-in-out !important;
+  animation-fill-mode: both !important;
+}
+
+@keyframes ctaPulse {
+  0%, 100% { box-shadow: 0 6px 24px rgba(230,48,84,0.35); }
+  50% { box-shadow: 0 6px 24px rgba(230,48,84,0.35), 0 0 0 12px rgba(230,48,84,0); }
+}
+
+#hero .choosing .order-now:hover,
+button#x-checkout-btn:hover {
+  background: var(--brand-dark) !important;
+  background-image: linear-gradient(135deg, var(--brand-dark), var(--brand)) !important;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 12px 32px rgba(230,48,84,0.38) !important;
+  animation: none !important;
+}
+
+/* ==========================================
+   13. Stock Scarcity
+   ========================================== */
+
+#hero .choosing .exist-amount {
+  background: linear-gradient(135deg, rgba(230,48,84,0.06), var(--surface)) !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 10px 14px !important;
+  border: 1px solid rgba(230,48,84,0.12);
+}
+
+#hero .choosing .exist-amount .left i {
+  color: var(--brand) !important;
+  animation-duration: 1.4s !important;
+}
+
+#hero .choosing .exist-amount .left p {
+  color: var(--dark) !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+}
+
+#hero .choosing .exist-amount .line .l {
+  background-color: var(--brand) !important;
+  height: 5px !important;
+  border-radius: 100px !important;
+}
+
+#hero .choosing .exist-amount .line .r {
+  background-color: rgba(230,48,84,0.15) !important;
+  height: 5px !important;
+  border-radius: 100px !important;
+}
+
+/* ==========================================
+   14. Trust Badges (in-hero)
+   ========================================== */
+
+#hero .choosing .features-content .item img {
+  background-color: var(--surface) !important;
+  border: none !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 10px !important;
+  height: 52px !important;
+  transition: transform var(--duration) ease;
+}
+
+#hero .choosing .features-content .item:hover img {
+  transform: scale(1.08) !important;
+}
+
+#hero .choosing .features-content .item h6 {
+  color: var(--text-muted) !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  text-transform: none !important;
+  margin-top: 6px;
+}
+
+/* ==========================================
+   15. Main Description
+   ========================================== */
+
+#hero .choosing .main-description {
+  color: var(--text-muted) !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  line-height: 1.75 !important;
+}
+
+/* ==========================================
+   16. In-Product Quantity Counter
+   ========================================== */
+
+.in-product-quantity-counter {
+  background-color: var(--surface) !important;
+  border-radius: 10px !important;
+  border: 1px solid var(--border) !important;
+}
+
+/* ==========================================
+   17. Features Section (#features)
+   ========================================== */
+
+#features {
+  background: #fff;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 48px 0 !important;
+}
+
+#features .features-content .item {
+  text-align: center;
+  padding: 20px 12px;
+  transition: transform var(--duration) ease;
+}
+
+#features .features-content .item:hover {
+  transform: translateY(-4px);
+}
+
+#features .features-content .item img {
+  margin: 0 auto 14px !important;
+  background: var(--surface) !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 10px !important;
+  height: 54px !important;
+  transition: transform var(--duration) ease;
+}
+
+#features .features-content .item:hover img {
+  transform: scale(1.1);
+}
+
+#features .features-content .item h6 {
+  color: var(--dark) !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+}
+
+/* ==========================================
+   18. Services Section (#services)
+   ========================================== */
+
+#services {
+  padding: 80px 0 !important;
+  background: var(--bg) !important;
+}
+
+#services .section-title h2 {
+  font-family: var(--serif) !important;
+  font-size: 40px !important;
+  font-weight: 600 !important;
+  color: var(--dark) !important;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+#services .section-title p {
+  color: var(--text-muted) !important;
+  font-size: 16px !important;
+}
+
+#services .item {
+  background: #fff !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+  padding: 28px !important;
+  box-shadow: none !important;
+  transition: transform var(--duration) ease, box-shadow var(--duration) ease;
+}
+
+#services .item:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md) !important;
+  border-color: var(--accent) !important;
+}
+
+#services .item img {
+  background: var(--surface) !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 10px !important;
+  height: 56px !important;
+  margin-bottom: 16px !important;
+}
+
+#services .item h5 {
+  color: var(--dark) !important;
+  font-weight: 800 !important;
+  font-size: 16px !important;
+  margin-bottom: 8px !important;
+}
+
+#services .item p {
+  color: var(--text-muted) !important;
+  font-size: 14px !important;
+  line-height: 1.7 !important;
+}
+
+/* ==========================================
+   19. Changing / Before-After Section (#changing)
+   ========================================== */
+
+#changing {
+  padding: 80px 0 !important;
+  background: var(--surface) !important;
+}
+
+#changing .section-title h2 {
+  font-family: var(--serif) !important;
+  font-size: 40px !important;
+  font-weight: 600 !important;
+  color: var(--dark) !important;
+}
+
+/* ==========================================
+   20. Reviews Section (#reviews)
+   ========================================== */
+
+#reviews {
+  padding: 80px 0 !important;
+  background: var(--bg) !important;
+}
+
+#reviews .section-title h2 {
+  font-family: var(--serif) !important;
+  font-size: 40px !important;
+  font-weight: 600 !important;
+  color: var(--dark) !important;
+  letter-spacing: -0.5px;
+}
+
+#reviews .content {
+  background: var(--surface) !important;
+  border-radius: var(--radius-xl) !important;
+  padding: 40px !important;
+  border: 1px solid var(--border);
+}
+
+/* Rating summary */
+#reviews .content .right-side .mid .right {
+  background: #fff !important;
+  border-radius: var(--radius-md) !important;
+  border: 1px solid var(--border) !important;
+  padding: 16px !important;
+}
+
+/* Review cards */
+#reviews .review-card,
+#reviews .item {
+  background: #fff !important;
+  border-radius: var(--radius-md) !important;
+  border: 1px solid var(--border) !important;
+  border-right: 3px solid var(--primary) !important;
+  padding: 20px !important;
+  box-shadow: none !important;
+  transition: box-shadow var(--duration) ease;
+}
+
+#reviews .review-card:hover,
+#reviews .item:hover {
+  box-shadow: var(--shadow-soft) !important;
+}
+
+#reviews .rating-box i,
+#reviews .stars i {
+  color: var(--brand) !important;
+}
+
+/* ==========================================
+   21. FAQ Section (#faq)
+   ========================================== */
+
+#faq {
+  padding: 80px 0 !important;
+  background: #fff !important;
+}
+
+#faq .section-title h2 {
+  font-family: var(--serif) !important;
+  font-size: 40px !important;
+  font-weight: 600 !important;
+  color: var(--dark) !important;
+  letter-spacing: -0.5px;
+}
+
+#faq .more-faq .top-icon {
+  background: var(--primary) !important;
+  box-shadow: 0 6px 16px rgba(201,132,122,0.25), 0 0 0 6px rgba(201,132,122,0.12) !important;
+}
+
+/* FAQ accordion items */
+#faq .accordion-element,
+#faq .faq-item {
+  border-radius: var(--radius-md) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: none !important;
+  background: var(--bg) !important;
+  margin-bottom: 12px !important;
+  transition: border-color var(--duration) ease;
+}
+
+#faq .accordion-element:hover,
+#faq .faq-item:hover {
+  border-color: var(--primary) !important;
+}
+
+#faq .accordion-element.active,
+#faq .faq-item.active {
+  border-color: var(--primary) !important;
+  background: var(--surface) !important;
+}
+
+#faq .accordion-butn:hover {
+  background-color: transparent !important;
+}
+
+#faq .accordion-butn .btn-title .right img {
+  background-color: var(--surface) !important;
+}
+
+/* FAQ questions inside hero / mini FAQ */
+#hero .accordion-element {
+  background: var(--bg) !important;
+  border: 1px solid var(--border) !important;
+}
+
+#hero .accordion-element:hover {
+  border-color: var(--primary) !important;
+  transform: none !important;
+}
+
+/* ==========================================
+   22. Footer (#footer)
+   ========================================== */
+
+#footer {
+  background-color: #F7F0EE !important;
+  padding: 60px 0 !important;
+  margin-bottom: 0 !important;
+  border-top: 1px solid var(--border);
+}
+
+#footer .content .top {
+  background: var(--surface) !important;
+  border-radius: var(--radius-lg) !important;
+  padding: 32px !important;
+}
+
+#footer .content .top .item button {
+  background: var(--brand) !important;
+  border-radius: var(--radius-sm) !important;
+  border: none !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  padding: 12px 24px !important;
+  cursor: pointer;
+  transition: background var(--duration) ease, transform var(--duration) ease;
+}
+
+#footer .content .top .item button:hover {
+  background: var(--brand-dark) !important;
+  transform: translateY(-2px);
+}
+
+footer {
+  background-color: #F7F0EE !important;
+}
+
+.ql-editor.leading-10.css-1i2r0cx {
+  background-color: #F7F0EE !important;
+  border-top: 1px solid var(--border) !important;
+}
+
+/* ==========================================
+   23. General Card / Shadow Overrides
+   ========================================== */
+
+/* Override heavy generic box shadows */
+.shadow-\[0px_1px_29px_0px_\#2022271C\] {
+  box-shadow: var(--shadow-soft) !important;
+  border: 1px solid var(--border) !important;
+}
+
+.hover\:shadow-\[0px_8px_50px_0px_rgba\(32\2c 34\2c 39\2c 0\.25\)\]:hover {
+  box-shadow: var(--shadow-md) !important;
+}
+
+/* ==========================================
+   24. Checkout Buttons (EasyOrders platform)
+   ========================================== */
+
+button.checkout_btn {
+  background: var(--dark) !important;
+  color: #fff !important;
+  border-radius: var(--radius-sm) !important;
+  font-weight: 700 !important;
+  transition: background var(--duration) ease, transform var(--duration) ease !important;
+}
+
+button.checkout_btn:hover {
+  background: #373737 !important;
+  transform: translateY(-2px);
+}
+
+button.add_to_cart_btn {
+  border: 1.5px solid var(--dark) !important;
+  border-radius: var(--radius-sm) !important;
+  font-weight: 600 !important;
+  transition: all var(--duration) ease !important;
+}
+
+button.add_to_cart_btn:hover {
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+  color: #fff !important;
+}
+
+/* ==========================================
+   25. Misc UI Overrides
+   ========================================== */
+
+/* Headless UI portal link color */
+#headlessui-portal-root button.font-bold.text-skin-primary.underline {
+  color: var(--brand) !important;
+}
+
+/* Sidebar panel */
+#headlessui-portal-root .pointer-events-none.fixed.inset-y-0.left-0.flex.max-w-full.ps-10 {
+  right: 0;
+  padding-right: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Section 3 overlay fix */
+main.container_class > .content_container:nth-of-type(3)
+  .flex.flex-row.flex-wrap > div:nth-child(2)
+  > div:first-child > div:first-child
+  > span.absolute.inset-0.bg-\[\#f3f3f3\] {
+  display: block !important;
+  background: rgba(42,31,29,0.55) !important;
+  opacity: 1 !important;
+  z-index: 1 !important;
+}
+
+h3.text-white.text-2xl.md\:text-\[42px\].font-bold { z-index: 2; }
+p.text-white.text-sm.md\:text-xl { z-index: 2; }
+button.w-fit.mx-auto.flex.gap-2\.5.items-center.text-sm.md\:text-base.text-white.font-semibold.border.border-\[\#E2E2E2\].rounded-2xl.py-3.px-7.md\:px-10.md\:mt-3 { z-index: 2; }
+
+nav span.absolute.inset-0.w-full.h-full.bg-\[\#f3f3f3\].hidden {
+  display: none !important;
+}
+
+/* EasyOrders header flex fix */
+header .h-14.flex.items-center {
+  display: flex !important;
+  flex-direction: row-reverse !important;
+  align-items: center !important;
+}
+
+/* EasyOrders layout gap */
+.flex.flex-col.gap-8.css-1pk60b8 {
+  padding-top: 0 !important;
+}
+
+.flex.flex-col.gap-8.css-1ywlaqq {
+  border-radius: var(--radius-xl) !important;
+  margin-bottom: 80px !important;
+}
+
+/* ==========================================
+   26. Back to Top Button
+   ========================================== */
+
+.back-to-top {
+  bottom: 90px !important;
+  right: 20px !important;
+}
+
+/* ==========================================
+   27. Animations
+   ========================================== */
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes imageSlideIn {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+#hero .right-side {
+  animation: imageSlideIn 0.6s ease-out;
+}
+
+#hero .left-side .main-content {
+  animation: scaleIn 0.5s ease-out;
+}
+
+/* ==========================================
+   28. Mobile Responsive (CRITICAL)
+   ========================================== */
+
+@media (max-width: 767px) {
+
+  /* Hero layout — stack vertically */
+  #hero .right-side,
+  #hero .left-side {
+    width: 100% !important;
+    float: none !important;
+    position: static !important;
+  }
+
+  #hero .right-side {
+    margin-bottom: 20px;
+  }
+
+  #hero .carousel .carousel-inner .carousel-item img {
+    height: 300px !important;
+  }
+
+  #hero .middle {
+    padding: 0 12px !important;
+  }
+
+  #hero .left-side .main-content {
+    padding: 18px !important;
+    border-radius: var(--radius-lg) !important;
+  }
+
+  /* Mobile bundle cards */
+  .accordion-element {
+    min-height: 64px !important;
+  }
+
+  /* Form inputs — prevent iOS zoom */
+  #hero .left-side .main-content .form-container form .input-container .input-box input {
+    font-size: 16px !important;
+  }
+
+  /* Mobile sticky CTA */
+  .sticky-cta-mobile {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    padding: 12px 16px !important;
+    background: rgba(253,248,246,0.97) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    box-shadow: 0 -4px 20px rgba(42,31,29,0.12) !important;
+    z-index: 999 !important;
+    border-top: 1px solid var(--border) !important;
+  }
+
+  /* Section padding reduction */
+  #services, #reviews, #faq, #features {
+    padding: 48px 0 !important;
+  }
+
+  #services .item, #reviews .review-card {
+    margin-bottom: 16px;
+  }
+
+  /* Headings scale down */
+  #services .section-title h2,
+  #reviews .section-title h2,
+  #faq .section-title h2,
+  #changing .section-title h2 {
+    font-size: 28px !important;
+  }
+
+  /* Top bar */
+  .top-header .top-title p {
+    font-size: 11px !important;
+  }
+
+  .top-header .top-title .countdown .countdown-item {
+    font-size: 12px !important;
+  }
+
+  /* Reviews content */
+  #reviews .content {
+    padding: 20px !important;
+  }
+
+  /* FAQ section */
+  #faq {
+    padding: 40px 0 !important;
+  }
+
+  /* Mobile card separator */
+  .css-1ywlaqq .animate-slideIn.cursor-pointer {
+    border-bottom: 1px solid rgba(0,0,0,0.08) !important;
+    padding-bottom: 20px !important;
+  }
+
+  /* Bottom nav spacing for sticky CTA */
+  #footer {
+    padding-bottom: 80px !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  #hero .right-side,
+  #hero .left-side {
+    width: 48% !important;
+  }
+
+  #hero .left-side .main-content .title h1 {
+    font-size: 22px !important;
+  }
+}
+
+/* ==========================================
+   29. Section heading accent line
+   ========================================== */
+
+.section-title h2::after,
+.section-title h3::after {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  margin: 12px auto 0;
+  border-radius: 2px;
+}
+
+/* For RTL sections that have centered text */
+[dir="rtl"] .section-title h2::after {
+  margin: 12px auto 0;
+}
+
+/* ==========================================
+   30. Utility: Smooth transitions everywhere
+   ========================================== */
+
+button, a, input, select {
+  transition: all var(--duration) ease;
+}
+
+/* Override the overly aggressive global animation */
+* {
+  animation-iteration-count: 1 !important;
+}
+
+/* Re-enable infinite animations for specific elements */
+button#x-checkout-btn,
+#hero .choosing .order-now {
+  animation-iteration-count: infinite !important;
+}
+
+.top-header .top-title i {
+  animation-iteration-count: infinite !important;
+}
+
+.back-to-top:hover {
+  animation-iteration-count: infinite !important;
+}
+
+#hero .choosing .exist-amount .left i {
+  animation-iteration-count: infinite !important;
+}
+
+/* ==========================================
+   31. Section heading typography
+   ========================================== */
+
+.section-title {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.section-title h6 {
+  color: var(--primary) !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  letter-spacing: 3px !important;
+  text-transform: uppercase !important;
+  margin-bottom: 8px !important;
+}
+
+.section-title h2 {
+  font-family: var(--serif) !important;
+  font-size: 38px !important;
+  font-weight: 600 !important;
+  color: var(--dark) !important;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+.section-title p {
+  color: var(--text-muted) !important;
+  font-size: 16px !important;
+  max-width: 520px;
+  margin: 12px auto 0 !important;
+}
+
+/* ==========================================
+   End of Premium Cosmetics Funnel Styles
+   ========================================== */
