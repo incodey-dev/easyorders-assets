@@ -1,6 +1,6 @@
 /* =========================================
    PREMIUM ARABIC COSMETICS FUNNEL
-   Version: 2.2.0 — EasyOrders Compatible
+   Version: 2.3.0 — EasyOrders Compatible
    Direction: RTL
    Design: Editorial Luxury
    ========================================= */
@@ -417,7 +417,7 @@ button, input, select, textarea {
 /* Hero image — NO parallax, NO fixed position */
 .hero-image-placeholder {
   width: 100%;
-  aspect-ratio: 4/5;
+  aspect-ratio: 1 / 1 !important;
   max-width: 520px;
   background: linear-gradient(145deg, var(--color-surface-alt) 0%, var(--color-highlight) 100%);
   border-radius: var(--radius-xl);
@@ -430,7 +430,7 @@ button, input, select, textarea {
 .hero-main-image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: cover !important;
   border-radius: var(--radius-xl);
   position: relative !important;
   inset: auto !important;
@@ -546,7 +546,7 @@ button, input, select, textarea {
 .product-main-image,
 .carousel-container.product-main-image {
   width: 100%;
-  aspect-ratio: 4/5;
+  aspect-ratio: 1 / 1 !important;
   background: linear-gradient(145deg, var(--color-surface-alt) 0%, var(--color-highlight) 100%);
   border-radius: var(--radius-xl);
   overflow: hidden;
@@ -555,7 +555,8 @@ button, input, select, textarea {
 .product-main-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain !important;
+  background: #fff;
 }
 .carousel-item {
   display: none;
@@ -625,6 +626,20 @@ button, input, select, textarea {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.hero-image-placeholder,
+.product-main-image,
+.carousel-container.product-main-image {
+  aspect-ratio: 1 / 1 !important;
+}
+
+.hero-main-image,
+.product-main-img,
+.carousel-item img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
 }
 
 .product-details {
@@ -776,7 +791,7 @@ button, input, select, textarea {
   border-radius: var(--radius-md);
   font-weight: 600;
 }
-.total-price-row #totalCost {
+.total-price-row #productTotalMirror {
   font-size: 1.3rem;
   font-weight: 800;
   color: var(--color-accent);
@@ -1028,6 +1043,179 @@ button#x-checkout-btn:hover,
   border-radius: 3px;
   width: 0;
   transition: width 1.5s ease;
+}
+
+/* Checkout form — RTL icon/text overlap fix */
+#checkout-form {
+  direction: rtl;
+}
+
+#checkout-form .input-container,
+#checkout-form [class*="input-container"],
+#checkout-form .form-group,
+#checkout-form [class*="field"] {
+  position: relative !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+#checkout-form input,
+#checkout-form select,
+#checkout-form textarea {
+  direction: rtl !important;
+  text-align: right !important;
+  width: 100% !important;
+  min-height: 52px !important;
+  padding-block: 14px !important;
+  padding-inline-start: 16px !important;
+  padding-inline-end: 48px !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+  background: #fff !important;
+  color: var(--color-text) !important;
+  font-family: var(--font-family) !important;
+  font-size: 16px !important;
+  line-height: 1.4 !important;
+  box-sizing: border-box !important;
+}
+
+#checkout-form textarea {
+  min-height: 110px !important;
+  resize: vertical;
+  padding-top: 16px !important;
+}
+
+#checkout-form input::placeholder,
+#checkout-form textarea::placeholder {
+  color: #8A8A8A !important;
+  opacity: 1 !important;
+  text-align: right !important;
+}
+
+#checkout-form img,
+#checkout-form svg,
+#checkout-form i,
+#checkout-form [class*="icon"] {
+  flex-shrink: 0;
+}
+
+/* Absolutely-positioned icons inside input containers */
+#checkout-form .input-container > img,
+#checkout-form [class*="input-container"] > img,
+#checkout-form .input-container > svg,
+#checkout-form [class*="input-container"] > svg {
+  position: absolute !important;
+  inset-inline-end: 16px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 20px !important;
+  height: 20px !important;
+  z-index: 2 !important;
+  pointer-events: none !important;
+  opacity: 0.75;
+}
+
+/* Textarea icon near top, not center */
+#checkout-form textarea ~ img,
+#checkout-form textarea ~ svg,
+#checkout-form [class*="address"] img,
+#checkout-form [class*="address"] svg {
+  top: 18px !important;
+  transform: none !important;
+}
+
+/* Checkout total row inside order card */
+.checkout-total-row {
+  width: 100%;
+  margin: 18px 0 14px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: var(--color-highlight);
+  border: 1px solid rgba(200, 149, 108, 0.22);
+  border-radius: var(--radius-md);
+  direction: rtl;
+}
+
+.checkout-total-label {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--color-dark);
+}
+
+.checkout-total-value,
+#totalCost {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: var(--color-accent-dark);
+  white-space: nowrap;
+}
+
+/* In-product quantity counter — premium compact styling */
+#checkout-form .in-product-quantity-counter,
+#checkout-form [class*="in-product-quantity-counter"] {
+  width: 100% !important;
+  min-height: 74px !important;
+  padding: 14px 16px !important;
+  margin: 0 0 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+  background: #fff !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: none !important;
+  direction: rtl !important;
+}
+
+#checkout-form .in-product-quantity-counter label,
+#checkout-form .in-product-quantity-counter .label,
+#checkout-form .in-product-quantity-counter [class*="label"] {
+  margin: 0 !important;
+  font-weight: 800 !important;
+  color: var(--color-dark) !important;
+  white-space: nowrap !important;
+}
+
+#checkout-form .in-product-quantity-counter button {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  border-radius: 10px !important;
+  background: var(--color-surface) !important;
+  border: 1px solid var(--color-border) !important;
+  color: var(--color-dark) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-weight: 800 !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+}
+
+#checkout-form .in-product-quantity-counter input,
+#checkout-form .in-product-quantity-counter [class*="value"],
+#checkout-form .in-product-quantity-counter span {
+  text-align: center !important;
+  font-weight: 800 !important;
+  color: var(--color-dark) !important;
+}
+
+#checkout-form .in-product-quantity-counter [class*="counter"],
+#checkout-form .in-product-quantity-counter [class*="control"],
+#checkout-form .in-product-quantity-counter [class*="quantity"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 14px !important;
+  min-width: 150px !important;
+  padding: 8px 12px !important;
+  background: #FAFAF8 !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 16px !important;
 }
 
 /* =========================================
@@ -1668,16 +1856,39 @@ button#x-checkout-btn:hover,
 .faq-answer {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.4s ease, padding 0.4s ease;
+  transition: max-height 0.35s ease, padding 0.35s ease, opacity 0.25s ease;
+  opacity: 0;
 }
 .faq-item.open .faq-answer {
-  max-height: 500px;
-  padding: 0 20px 18px;
+  max-height: 700px;
+  padding: 0 24px 18px;
+  opacity: 1;
 }
 .faq-answer p {
   font-size: 0.9rem;
   line-height: 1.7;
   color: var(--color-muted);
+}
+
+/* FAQ — public safety: prevent EasyOrders overlays from blocking clicks */
+.faq-section,
+.faq-list,
+.faq-item,
+.faq-question {
+  position: relative;
+}
+
+.faq-question {
+  z-index: 2;
+  pointer-events: auto !important;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+}
+
+.faq-question * {
+  pointer-events: none;
 }
 
 /* =========================================
@@ -1798,27 +2009,50 @@ button#x-checkout-btn:hover,
   margin-bottom: 16px;
   max-width: 280px;
 }
+/* Footer social — SVG icons */
 .footer-social {
   display: flex;
+  align-items: center;
   gap: 12px;
 }
-.footer-social a {
-  width: 40px;
-  height: 40px;
+
+.footer-social-link {
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
-  color: var(--color-text);
-  transition: all var(--transition-fast);
-}
-.footer-social a:hover {
-  background: var(--color-accent);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
   color: #fff;
+  transition: transform var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.footer-social-link:hover {
+  transform: translateY(-2px);
+  background: var(--color-accent);
   border-color: var(--color-accent);
+}
+
+.footer-social-link svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  display: block;
+}
+
+/* Light footer variant */
+.site-footer .footer-social-link {
+  background: var(--color-surface);
+  color: var(--color-dark);
+  border-color: var(--color-border);
+}
+
+.site-footer .footer-social-link:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
 }
 
 .footer-links h4 {
@@ -2071,7 +2305,7 @@ button#x-checkout-btn:hover,
   .hero-image-placeholder {
     max-width: 320px;
     margin: 0 auto;
-    aspect-ratio: 3/4;
+    aspect-ratio: 1 / 1 !important;
   }
   .hero-urgency {
     justify-content: center;
