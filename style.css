@@ -151,3 +151,21 @@ button#x-checkout-btn:hover {
 #footer .content .top {
     background-color: rgb(255 240 244);
 }
+
+#footer .content .top .item button {
+background-color: rgb(230 48 84);
+}
+
+#faq .more-faq .top-icon {
+    box-shadow: 0px 6px 10px 0px rgb(146 3 113 / 13%), 0px 0px 0px 6px rgb(251 46 131 / 12%);
+}
+
+#reviews .content {
+background-color: rgb(255 240 244);
+}
+
+#reviews .content .right-side .mid .right {
+    background-color: rgb(255 224 232);
+    border: none;
+    
+}
