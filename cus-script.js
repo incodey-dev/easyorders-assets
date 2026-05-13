@@ -1,6 +1,6 @@
 /* =========================================
    PREMIUM ARABIC COSMETICS FUNNEL — JS
-   Version: 2.4.0 — EasyOrders Compatible
+   Version: 2.6.0 — EasyOrders Compatible
    Pure Vanilla JS — No Dependencies
    Architecture: Delegated Events + Idempotent Init
    ========================================= */
@@ -8,7 +8,7 @@
 (function () {
   'use strict';
 
-  var VERSION = '2.4.0';
+  var VERSION = '2.6.0';
   var countdownInterval = null;
 
   // ─── Version marker for debugging ───
@@ -36,7 +36,6 @@
     initCounters();
     initScarcity();
     initPriceSync();
-    initProductTitleSync();
     initTotalSync();
     initUpsellCarousel();
   }
@@ -99,8 +98,6 @@
       }, true);
     }
   }
-
-  // ─── FAQ Accordion (delegated) ─── (legacy — now handled by handleFaqToggleEvent above)
 
   // ─── Review Filter Tabs (delegated) ───
   function handleReviewFilterClick(e) {
@@ -451,178 +448,6 @@
   }
 
   // ═══════════════════════════════════════
-  // PRODUCT TITLE — robust best-effort sync
-  // ═══════════════════════════════════════
-  // EasyOrders Funnel Builder does NOT document an official product-title hook.
-  // Liquid is NOT supported in funnels (only Mustache.js for gallery).
-  // We attempt safe sync from already-rendered page data only.
-  // No API calls, no API keys, no client-side EasyOrders API.
-
-  function isValidProductTitle(value, fallback) {
-    if (!value) return false;
-    value = String(value).trim();
-    if (!value) return false;
-    if (value.length > 90) return false;
-    if (value === fallback) return false;
-    if (value.indexOf('اطلبي') !== -1) return false;
-    if (value.indexOf('جمالك') !== -1 && value.indexOf('الصحيحة') !== -1) return false;
-    if (value.indexOf('لونيفا') !== -1 && value.indexOf('—') !== -1) return false;
-    return true;
-  }
-
-  function syncProductTitleSafe() {
-    var titleEl = document.getElementById('eo-product-title');
-    if (!titleEl) return;
-
-    var fallback = titleEl.getAttribute('data-fallback-title') || 'سيروم التوهج المطفّر';
-    var current = titleEl.textContent.trim();
-
-    var found = findEasyOrdersProductTitle(fallback);
-    if (found && found !== current) {
-      titleEl.textContent = found;
-      titleEl.setAttribute('data-title-synced', 'true');
-    }
-  }
-
-  function findEasyOrdersProductTitle(fallback) {
-    // 1. Known platform selectors (excluding our custom title and upsell section)
-    var selectors = [
-      '[data-product-name]',
-      '[data-product-title]',
-      '.product_name',
-      '.product-title',
-      '.product_title',
-      '#productName',
-      '#product-name',
-      '#eo-product-name'
-    ];
-
-    for (var i = 0; i < selectors.length; i++) {
-      var nodes = document.querySelectorAll(selectors[i]);
-      for (var j = 0; j < nodes.length; j++) {
-        if (nodes[j].id === 'eo-product-title') continue;
-        if (nodes[j].closest && nodes[j].closest('#upsell-products')) continue;
-        var txt = nodes[j].getAttribute('data-product-name') ||
-                  nodes[j].getAttribute('data-product-title') ||
-                  nodes[j].textContent;
-        if (isValidProductTitle(txt, fallback)) return txt.trim();
-      }
-    }
-
-    // 2. Checkout hidden inputs
-    var checkout = document.getElementById('checkout-form');
-    if (checkout) {
-      var inputs = checkout.querySelectorAll('input[type="hidden"], input');
-      for (var k = 0; k < inputs.length; k++) {
-        var name = (inputs[k].name || inputs[k].id || '').toLowerCase();
-        var val = inputs[k].value;
-        if (
-          (name.indexOf('product') !== -1 || name.indexOf('title') !== -1 || name.indexOf('name') !== -1) &&
-          isValidProductTitle(val, fallback)
-        ) {
-          return val.trim();
-        }
-      }
-    }
-
-    // 3. __NEXT_DATA__ JSON search
-    var nextScript = document.getElementById('__NEXT_DATA__');
-    if (nextScript && nextScript.textContent) {
-      try {
-        var data = JSON.parse(nextScript.textContent);
-        var found = deepFindProductTitle(data, fallback);
-        if (found) return found;
-      } catch (e) { /* ignore parse errors */ }
-    }
-
-    // 4. Known globals
-    var globalCandidates = [
-      window.__EO_PRODUCT__,
-      window.__PRODUCT__,
-      window.product,
-      window.currentProduct
-    ];
-
-    for (var g = 0; g < globalCandidates.length; g++) {
-      var globalTitle = extractTitleFromObject(globalCandidates[g], fallback);
-      if (globalTitle) return globalTitle;
-    }
-
-    // 5. Meta title fallback (only if it looks like a product name)
-    var metaOg = document.querySelector('meta[property="og:title"], meta[name="twitter:title"]');
-    if (metaOg) {
-      var content = metaOg.getAttribute('content');
-      if (isValidProductTitle(content, fallback)) return content.trim();
-    }
-
-    return null;
-  }
-
-  function extractTitleFromObject(obj, fallback) {
-    if (!obj || typeof obj !== 'object') return null;
-    var keys = ['name', 'title', 'product_name', 'productName'];
-    for (var i = 0; i < keys.length; i++) {
-      if (isValidProductTitle(obj[keys[i]], fallback)) return String(obj[keys[i]]).trim();
-    }
-    return deepFindProductTitle(obj, fallback);
-  }
-
-  function deepFindProductTitle(obj, fallback, depth) {
-    depth = depth || 0;
-    if (!obj || depth > 6) return null;
-
-    if (Array.isArray(obj)) {
-      for (var i = 0; i < obj.length; i++) {
-        var arrResult = deepFindProductTitle(obj[i], fallback, depth + 1);
-        if (arrResult) return arrResult;
-      }
-      return null;
-    }
-
-    if (typeof obj === 'object') {
-      // Prefer objects that look like a product
-      var hasProductSignals =
-        obj.id || obj.slug || obj.price || obj.sale_price || obj.images || obj.image;
-
-      if (hasProductSignals) {
-        var candidate = obj.name || obj.title || obj.product_name || obj.productName;
-        if (isValidProductTitle(candidate, fallback)) return String(candidate).trim();
-      }
-
-      for (var key in obj) {
-        if (!Object.prototype.hasOwnProperty.call(obj, key)) continue;
-        var result = deepFindProductTitle(obj[key], fallback, depth + 1);
-        if (result) return result;
-      }
-    }
-
-    return null;
-  }
-
-  function initProductTitleSync() {
-    syncProductTitleSafe();
-
-    var attempts = [500, 1500, 3000, 5000];
-    for (var i = 0; i < attempts.length; i++) {
-      setTimeout(syncProductTitleSafe, attempts[i]);
-    }
-
-    if (!window.__lunivaTitleObserverStarted) {
-      window.__lunivaTitleObserverStarted = true;
-      var startedAt = Date.now();
-      var observer = new MutationObserver(function () {
-        syncProductTitleSafe();
-        if (Date.now() - startedAt > 8000) observer.disconnect();
-      });
-      observer.observe(document.documentElement, {
-        childList: true,
-        subtree: true,
-        characterData: true
-      });
-    }
-  }
-
-  // ═══════════════════════════════════════
   // TOTAL COST SYNC — mirror #totalCost to #productTotalMirror
   // ═══════════════════════════════════════
   function syncTotalMirrors() {
@@ -662,11 +487,11 @@
   }
 
   // ═══════════════════════════════════════
-  // UPSELL PRODUCTS CAROUSEL
+  // UPSELL PRODUCTS CAROUSEL — arrows only
   // ═══════════════════════════════════════
-  // Progressive enhancement: prev/next buttons only.
-  // Does not fetch products. Does not use API.
-  // Add-to-cart relies on EasyOrders native data attributes.
+  // Manual showcase section. Does not fetch products.
+  // Does not use API. No add-to-cart. No custom modal.
+  // All upsell buttons are simple <a> links to product pages.
   function initUpsellCarousel() {
     var sections = document.querySelectorAll('#upsell-products');
     for (var s = 0; s < sections.length; s++) {
@@ -699,7 +524,6 @@
   // Re-init when EasyOrders gallery renders
   window.addEventListener('eo:gallery-rendered', function () {
     initPriceSync();
-    syncProductTitleSafe();
     initTotalSync();
     initUpsellCarousel();
   });
