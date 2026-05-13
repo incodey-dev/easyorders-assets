@@ -2448,7 +2448,7 @@ button#x-checkout-btn:hover,
 }
 
 #checkout-form input, #checkout-form select, #checkout-form textarea {
-   padding: 0px 40px 0px 0px !important;
+    padding-right: 40px !important;
 }
 
 .order-section span.text-skin-primary {
