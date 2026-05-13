@@ -1,6 +1,6 @@
 /* =========================================
    PREMIUM ARABIC COSMETICS FUNNEL
-   Version: 2.3.0 — EasyOrders Compatible
+   Version: 2.4.0 — EasyOrders Compatible
    Direction: RTL
    Design: Editorial Luxury
    ========================================= */
@@ -1770,6 +1770,221 @@ button#x-checkout-btn:hover,
 }
 .upsell-card.popular .btn-upsell:hover {
   background: var(--color-cta-hover);
+}
+
+/* =========================================
+   UPSELL PRODUCTS CAROUSEL — v2.4.0
+   ⚠️ Products in this section are MANUAL FALLBACK only.
+   EasyOrders Funnel Builder does NOT support dynamic
+   product lists. Update cards manually or use Custom Theme.
+   ========================================= */
+.upsell-products-section {
+  padding: 80px 16px;
+  background: var(--color-bg);
+  direction: rtl;
+}
+
+.upsell-products-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.upsell-carousel-shell {
+  position: relative;
+}
+
+.upsell-products-track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(240px, 1fr);
+  gap: 18px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 16px;
+  padding: 8px 4px 18px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.upsell-products-track::-webkit-scrollbar {
+  display: none;
+}
+
+.upsell-product-card {
+  scroll-snap-align: start;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.upsell-product-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(200, 149, 108, 0.35);
+}
+
+.upsell-product-image-link {
+  display: block;
+  aspect-ratio: 1 / 1;
+  background: #fff;
+  overflow: hidden;
+}
+
+.upsell-product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.upsell-product-content {
+  padding: 16px;
+}
+
+.upsell-product-name {
+  display: block;
+  color: var(--color-dark);
+  font-weight: 800;
+  font-size: 0.98rem;
+  line-height: 1.45;
+  min-height: 2.8em;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.upsell-product-name:hover {
+  color: var(--color-accent);
+}
+
+.upsell-product-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.upsell-product-price {
+  color: var(--color-accent-dark);
+  font-weight: 900;
+  font-size: 1.05rem;
+}
+
+.upsell-product-old-price {
+  color: var(--color-muted);
+  text-decoration: line-through;
+  font-size: 0.88rem;
+}
+
+.upsell-product-actions {
+  margin-top: 14px;
+  display: grid;
+  gap: 8px;
+}
+
+.upsell-add-to-cart-btn,
+.upsell-view-product-btn {
+  width: 100%;
+  min-height: 44px;
+  border-radius: var(--radius-pill);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.upsell-add-to-cart-btn {
+  background: var(--color-cta);
+  color: #fff;
+  border: 1px solid var(--color-cta);
+}
+
+.upsell-add-to-cart-btn:hover {
+  background: var(--color-cta-hover);
+  border-color: var(--color-cta-hover);
+  transform: scale(1.02);
+}
+
+.upsell-view-product-btn {
+  background: var(--color-surface);
+  color: var(--color-dark);
+  border: 1px solid var(--color-border);
+}
+
+.upsell-view-product-btn:hover {
+  background: var(--color-highlight);
+  border-color: var(--color-accent);
+  color: var(--color-accent-dark);
+}
+
+.upsell-carousel-btn {
+  position: absolute;
+  top: 42%;
+  transform: translateY(-50%);
+  z-index: 5;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 1.4rem;
+  color: var(--color-dark);
+  transition: all var(--transition-fast);
+}
+
+.upsell-carousel-btn:hover {
+  background: var(--color-highlight);
+  border-color: var(--color-accent);
+  color: var(--color-accent-dark);
+}
+
+.upsell-prev {
+  right: -12px;
+}
+
+.upsell-next {
+  left: -12px;
+}
+
+/* Upsell carousel — mobile */
+@media (max-width: 768px) {
+  .upsell-products-section {
+    padding: 56px 16px;
+  }
+
+  .upsell-products-track {
+    grid-auto-columns: 78%;
+    gap: 14px;
+  }
+
+  .upsell-carousel-btn {
+    display: none;
+  }
+}
+
+/* Upsell carousel — tablet */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .upsell-products-track {
+    grid-auto-columns: calc((100% - 36px) / 3);
+  }
+}
+
+/* Upsell carousel — desktop */
+@media (min-width: 769px) {
+  .upsell-products-track {
+    grid-auto-columns: calc((100% - 54px) / 4);
+  }
 }
 
 /* =========================================
