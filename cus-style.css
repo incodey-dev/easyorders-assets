@@ -1,6 +1,6 @@
 /* =========================================
    PREMIUM ARABIC COSMETICS FUNNEL
-   Version: 2.4.0 — EasyOrders Compatible
+   Version: 2.5.0 — EasyOrders Compatible
    Direction: RTL
    Design: Editorial Luxury
    ========================================= */
@@ -1773,10 +1773,11 @@ button#x-checkout-btn:hover,
 }
 
 /* =========================================
-   UPSELL PRODUCTS CAROUSEL — v2.4.0
-   ⚠️ Products in this section are MANUAL FALLBACK only.
-   EasyOrders Funnel Builder does NOT support dynamic
-   product lists. Update cards manually or use Custom Theme.
+   UPSELL PRODUCTS CAROUSEL — v2.5.0
+   ⚠️ Card display data is MANUAL — update per product.
+   Add-to-Cart buttons attempt native EasyOrders behavior
+   via CustomEvent('quick-add'/'quick-view') with product page
+   URL fallback. No custom modals, no API calls.
    ========================================= */
 .upsell-products-section {
   padding: 80px 16px;
