@@ -2665,3 +2665,13 @@ button#x-checkout-btn:hover,
 .product-thumbnails, .thumbnails-container.product-thumbnails {
    padding: 10px 10px 10px 0px;
 }
+
+
+.pointer-events-auto .css-1yrdzub .container {
+    width: 100%;
+}
+
+
+.pointer-events-auto .css-1yrdzub .container:nth-of-type(1) {
+    width: 100%;
+}
