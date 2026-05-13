@@ -2668,10 +2668,10 @@ button#x-checkout-btn:hover,
 
 
 .pointer-events-auto .css-1yrdzub .container {
-    width: 100%;
+    width: 100% !important;
 }
 
 
 .pointer-events-auto .css-1yrdzub .container:nth-of-type(1) {
-    width: 100%;
+    width: 100% !important;
 }
