@@ -1975,9 +1975,6 @@ button#x-checkout-btn:hover,
   color: var(--color-accent-dark);
   margin-left: -8px;
 }
-.order-social-proof .avatar-row .mini-avatar:first-child {
-  margin-left: 0;
-}
 
 /* =========================================
    SECTION 13 — FOOTER
