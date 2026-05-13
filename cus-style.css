@@ -1,6 +1,6 @@
 /* =========================================
    PREMIUM ARABIC COSMETICS FUNNEL
-   Version: 2.4.0 — EasyOrders Compatible
+   Version: 2.6.0 — EasyOrders Compatible
    Direction: RTL
    Design: Editorial Luxury
    ========================================= */
@@ -1773,10 +1773,17 @@ button#x-checkout-btn:hover,
 }
 
 /* =========================================
-   UPSELL PRODUCTS CAROUSEL — v2.4.0
-   ⚠️ Products in this section are MANUAL FALLBACK only.
-   EasyOrders Funnel Builder does NOT support dynamic
-   product lists. Update cards manually or use Custom Theme.
+   UPSELL PRODUCTS SHOWCASE — v2.6.0
+   FINAL MANUAL VERSION
+   EasyOrders Funnel Builder does not expose reliable
+   dynamic product-list rendering or native product-preview
+   triggers inside raw funnel HTML.
+   This section is intentionally manual:
+   - edit image/name/price manually
+   - paste each product page link manually
+   - buttons navigate to product pages
+   - no fake add-to-cart
+   - no custom modal
    ========================================= */
 .upsell-products-section {
   padding: 80px 16px;
@@ -1884,7 +1891,7 @@ button#x-checkout-btn:hover,
   gap: 8px;
 }
 
-.upsell-add-to-cart-btn,
+.upsell-main-product-link,
 .upsell-view-product-btn {
   width: 100%;
   min-height: 44px;
@@ -1897,31 +1904,17 @@ button#x-checkout-btn:hover,
   font-size: 0.9rem;
   cursor: pointer;
   text-decoration: none;
-  transition: all var(--transition-fast);
-}
-
-.upsell-add-to-cart-btn {
   background: var(--color-cta);
   color: #fff;
   border: 1px solid var(--color-cta);
+  transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
 }
 
-.upsell-add-to-cart-btn:hover {
+.upsell-main-product-link:hover,
+.upsell-view-product-btn:hover {
   background: var(--color-cta-hover);
   border-color: var(--color-cta-hover);
-  transform: scale(1.02);
-}
-
-.upsell-view-product-btn {
-  background: var(--color-surface);
-  color: var(--color-dark);
-  border: 1px solid var(--color-border);
-}
-
-.upsell-view-product-btn:hover {
-  background: var(--color-highlight);
-  border-color: var(--color-accent);
-  color: var(--color-accent-dark);
+  transform: translateY(-1px);
 }
 
 .upsell-carousel-btn {
