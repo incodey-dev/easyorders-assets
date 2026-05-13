@@ -1,6 +1,6 @@
 /* =========================================
    PREMIUM ARABIC COSMETICS FUNNEL — JS
-   Version: 2.5.0 — EasyOrders Compatible
+   Version: 2.4.0 — EasyOrders Compatible
    Pure Vanilla JS — No Dependencies
    Architecture: Delegated Events + Idempotent Init
    ========================================= */
@@ -8,7 +8,7 @@
 (function () {
   'use strict';
 
-  var VERSION = '2.5.0';
+  var VERSION = '2.4.0';
   var countdownInterval = null;
 
   // ─── Version marker for debugging ───
@@ -39,7 +39,6 @@
     initProductTitleSync();
     initTotalSync();
     initUpsellCarousel();
-    initUpsellNativeActions();
   }
 
   // ═══════════════════════════════════════
@@ -100,6 +99,8 @@
       }, true);
     }
   }
+
+  // ─── FAQ Accordion (delegated) ─── (legacy — now handled by handleFaqToggleEvent above)
 
   // ─── Review Filter Tabs (delegated) ───
   function handleReviewFilterClick(e) {
@@ -456,88 +457,41 @@
   // Liquid is NOT supported in funnels (only Mustache.js for gallery).
   // We attempt safe sync from already-rendered page data only.
   // No API calls, no API keys, no client-side EasyOrders API.
-  //
-  // IMPORTANT: This code NEVER accepts store/brand names like "LUNIVA"
-  // as a product title. If no reliable source is found, the manual
-  // data-fallback-title is used and data-title-synced remains "false".
 
-  // Blocked title candidates — these are NEVER accepted as product title
-  var BLOCKED_TITLE_SUBSTRINGS = [
-    'luniva',
-    'لونيفا',
-    'جمالك',
-    'بالطريقة الصحيحة',
-    'اطلبي',
-    'منتجات مقترحة',
-    'كمّلي روتينك',
-    'آراء العملاء',
-    'المميزات',
-    'سياسة الخصوصية',
-    'شروط الاستخدام',
-    'سياسة الاسترداد',
-    'اتصل بنا',
-    'تواصلي معنا',
-    'الدفع عند الاستلام',
-    'الأكثر مبيعاً',
-    'شوفي المنتج',
-    'أضيفي للسلة',
-    'اختاري الدرجة'
-  ];
-
-  function isInvalidTitleCandidate(value, fallback) {
-    if (!value) return true;
+  function isValidProductTitle(value, fallback) {
+    if (!value) return false;
     value = String(value).trim();
-    if (!value) return true;
-    // Too long to be a product name
-    if (value.length > 100) return true;
-    // Same as fallback — no point replacing
-    if (value === fallback) return true;
-
-    var lower = value.toLowerCase();
-
-    // Block known brand/store/section names
-    for (var i = 0; i < BLOCKED_TITLE_SUBSTRINGS.length; i++) {
-      if (lower.indexOf(BLOCKED_TITLE_SUBSTRINGS[i].toLowerCase()) !== -1) return true;
-    }
-
-    // Block anything that looks like a brand line "لونيفا — LUNIVA"
-    if (lower.indexOf('—') !== -1 && (lower.indexOf('luniva') !== -1 || lower.indexOf('لونيفا') !== -1)) return true;
-
-    return false;
+    if (!value) return false;
+    if (value.length > 90) return false;
+    if (value === fallback) return false;
+    if (value.indexOf('اطلبي') !== -1) return false;
+    if (value.indexOf('جمالك') !== -1 && value.indexOf('الصحيحة') !== -1) return false;
+    if (value.indexOf('لونيفا') !== -1 && value.indexOf('—') !== -1) return false;
+    return true;
   }
 
-  function syncProductTitleFromEasyOrders() {
+  function syncProductTitleSafe() {
     var titleEl = document.getElementById('eo-product-title');
     if (!titleEl) return;
 
-    var fallback = titleEl.getAttribute('data-fallback-title') || titleEl.textContent.trim();
-    var currentSynced = titleEl.getAttribute('data-title-synced');
+    var fallback = titleEl.getAttribute('data-fallback-title') || 'سيروم التوهج المطفّر';
+    var current = titleEl.textContent.trim();
 
-    // If already successfully synced, don't overwrite
-    if (currentSynced === 'true') return;
-
-    var title = findReliableSelectedProductTitle(fallback);
-
-    if (title && !isInvalidTitleCandidate(title, fallback)) {
-      titleEl.textContent = title;
+    var found = findEasyOrdersProductTitle(fallback);
+    if (found && found !== current) {
+      titleEl.textContent = found;
       titleEl.setAttribute('data-title-synced', 'true');
-    } else {
-      // Ensure fallback is displayed and mark as not synced
-      if (!titleEl.textContent.trim()) {
-        titleEl.textContent = fallback;
-      }
-      titleEl.setAttribute('data-title-synced', 'false');
     }
   }
 
-  function findReliableSelectedProductTitle(fallback) {
-    // 1. Official/native EasyOrders product name hooks
-    //    .product_name is the official EasyOrders class for product titles on store pages.
-    //    If EasyOrders renders a product name element in the funnel, it would use this class.
+  function findEasyOrdersProductTitle(fallback) {
+    // 1. Known platform selectors (excluding our custom title and upsell section)
     var selectors = [
-      '.product_name',
       '[data-product-name]',
       '[data-product-title]',
+      '.product_name',
+      '.product-title',
+      '.product_title',
       '#productName',
       '#product-name',
       '#eo-product-name'
@@ -546,67 +500,42 @@
     for (var i = 0; i < selectors.length; i++) {
       var nodes = document.querySelectorAll(selectors[i]);
       for (var j = 0; j < nodes.length; j++) {
-        var node = nodes[j];
-
-        // Skip our own title element
-        if (node.id === 'eo-product-title') continue;
-        // Skip upsell section — upsell product names must not pollute main title
-        if (node.closest && node.closest('#upsell-products')) continue;
-        // Skip .product-brand — this is the brand line "لونيفا — LUNIVA", not the product name
-        if (node.closest && node.closest('.product-brand')) continue;
-        // Skip header/footer/logo areas
-        if (node.closest && node.closest('header')) continue;
-        if (node.closest && node.closest('footer')) continue;
-        if (node.closest && node.closest('.header-brand')) continue;
-        if (node.closest && node.closest('.footer-brand')) continue;
-        if (node.closest && node.closest('.footer-logo')) continue;
-        if (node.closest && node.closest('.footer-social')) continue;
-        // Skip hero headline area
-        if (node.closest && node.closest('.hero-headline')) continue;
-
-        var value =
-          node.getAttribute('data-product-name') ||
-          node.getAttribute('data-product-title') ||
-          node.textContent;
-
-        if (!isInvalidTitleCandidate(value, fallback)) {
-          return String(value).trim();
-        }
+        if (nodes[j].id === 'eo-product-title') continue;
+        if (nodes[j].closest && nodes[j].closest('#upsell-products')) continue;
+        var txt = nodes[j].getAttribute('data-product-name') ||
+                  nodes[j].getAttribute('data-product-title') ||
+                  nodes[j].textContent;
+        if (isValidProductTitle(txt, fallback)) return txt.trim();
       }
     }
 
-    // 2. Checkout hidden/input fields — must be very strict
+    // 2. Checkout hidden inputs
     var checkout = document.getElementById('checkout-form');
     if (checkout) {
       var inputs = checkout.querySelectorAll('input[type="hidden"], input');
       for (var k = 0; k < inputs.length; k++) {
-        var key = ((inputs[k].name || '') + ' ' + (inputs[k].id || '')).toLowerCase();
+        var name = (inputs[k].name || inputs[k].id || '').toLowerCase();
         var val = inputs[k].value;
-
-        var looksProductNameField =
-          key.indexOf('product_name') !== -1 ||
-          key.indexOf('productname') !== -1 ||
-          key.indexOf('product-title') !== -1 ||
-          key.indexOf('product_title') !== -1 ||
-          key.indexOf('item_name') !== -1;
-
-        if (looksProductNameField && !isInvalidTitleCandidate(val, fallback)) {
-          return String(val).trim();
+        if (
+          (name.indexOf('product') !== -1 || name.indexOf('title') !== -1 || name.indexOf('name') !== -1) &&
+          isValidProductTitle(val, fallback)
+        ) {
+          return val.trim();
         }
       }
     }
 
-    // 3. JSON / Next data — selected product only, exclude upsell cards/store brand
+    // 3. __NEXT_DATA__ JSON search
     var nextScript = document.getElementById('__NEXT_DATA__');
     if (nextScript && nextScript.textContent) {
       try {
         var data = JSON.parse(nextScript.textContent);
-        var fromJson = findSelectedProductTitleInJson(data, fallback);
-        if (fromJson) return fromJson;
+        var found = deepFindProductTitle(data, fallback);
+        if (found) return found;
       } catch (e) { /* ignore parse errors */ }
     }
 
-    // 4. Known EasyOrders global product objects
+    // 4. Known globals
     var globalCandidates = [
       window.__EO_PRODUCT__,
       window.__PRODUCT__,
@@ -619,40 +548,11 @@
       if (globalTitle) return globalTitle;
     }
 
-    return null;
-  }
-
-  function findSelectedProductTitleInJson(obj, fallback, depth) {
-    depth = depth || 0;
-    if (!obj || depth > 6) return null;
-
-    if (Array.isArray(obj)) {
-      for (var i = 0; i < obj.length; i++) {
-        var arrResult = findSelectedProductTitleInJson(obj[i], fallback, depth + 1);
-        if (arrResult) return arrResult;
-      }
-      return null;
-    }
-
-    if (typeof obj === 'object') {
-      // Prefer objects that look like a product (have product signals)
-      var hasProductSignals =
-        (obj.id || obj.slug || obj.price || obj.sale_price || obj.images || obj.image) &&
-        !obj.is_upsell &&
-        !obj.isUpsell;
-
-      if (hasProductSignals) {
-        var candidate = obj.name || obj.title || obj.product_name || obj.productName;
-        if (!isInvalidTitleCandidate(candidate, fallback)) {
-          return String(candidate).trim();
-        }
-      }
-
-      for (var key in obj) {
-        if (!Object.prototype.hasOwnProperty.call(obj, key)) continue;
-        var result = findSelectedProductTitleInJson(obj[key], fallback, depth + 1);
-        if (result) return result;
-      }
+    // 5. Meta title fallback (only if it looks like a product name)
+    var metaOg = document.querySelector('meta[property="og:title"], meta[name="twitter:title"]');
+    if (metaOg) {
+      var content = metaOg.getAttribute('content');
+      if (isValidProductTitle(content, fallback)) return content.trim();
     }
 
     return null;
@@ -662,27 +562,57 @@
     if (!obj || typeof obj !== 'object') return null;
     var keys = ['name', 'title', 'product_name', 'productName'];
     for (var i = 0; i < keys.length; i++) {
-      if (!isInvalidTitleCandidate(obj[keys[i]], fallback)) return String(obj[keys[i]]).trim();
+      if (isValidProductTitle(obj[keys[i]], fallback)) return String(obj[keys[i]]).trim();
     }
-    return findSelectedProductTitleInJson(obj, fallback);
+    return deepFindProductTitle(obj, fallback);
+  }
+
+  function deepFindProductTitle(obj, fallback, depth) {
+    depth = depth || 0;
+    if (!obj || depth > 6) return null;
+
+    if (Array.isArray(obj)) {
+      for (var i = 0; i < obj.length; i++) {
+        var arrResult = deepFindProductTitle(obj[i], fallback, depth + 1);
+        if (arrResult) return arrResult;
+      }
+      return null;
+    }
+
+    if (typeof obj === 'object') {
+      // Prefer objects that look like a product
+      var hasProductSignals =
+        obj.id || obj.slug || obj.price || obj.sale_price || obj.images || obj.image;
+
+      if (hasProductSignals) {
+        var candidate = obj.name || obj.title || obj.product_name || obj.productName;
+        if (isValidProductTitle(candidate, fallback)) return String(candidate).trim();
+      }
+
+      for (var key in obj) {
+        if (!Object.prototype.hasOwnProperty.call(obj, key)) continue;
+        var result = deepFindProductTitle(obj[key], fallback, depth + 1);
+        if (result) return result;
+      }
+    }
+
+    return null;
   }
 
   function initProductTitleSync() {
-    syncProductTitleFromEasyOrders();
+    syncProductTitleSafe();
 
-    // Retry at staggered intervals to catch late hydration
-    var attempts = [300, 800, 1500, 3000, 5000];
+    var attempts = [500, 1500, 3000, 5000];
     for (var i = 0; i < attempts.length; i++) {
-      setTimeout(syncProductTitleFromEasyOrders, attempts[i]);
+      setTimeout(syncProductTitleSafe, attempts[i]);
     }
 
-    // MutationObserver for dynamic DOM changes
     if (!window.__lunivaTitleObserverStarted) {
       window.__lunivaTitleObserverStarted = true;
       var startedAt = Date.now();
       var observer = new MutationObserver(function () {
-        syncProductTitleFromEasyOrders();
-        if (Date.now() - startedAt > 10000) observer.disconnect();
+        syncProductTitleSafe();
+        if (Date.now() - startedAt > 8000) observer.disconnect();
       });
       observer.observe(document.documentElement, {
         childList: true,
@@ -732,11 +662,11 @@
   }
 
   // ═══════════════════════════════════════
-  // UPSELL PRODUCTS CAROUSEL — arrows only
+  // UPSELL PRODUCTS CAROUSEL
   // ═══════════════════════════════════════
   // Progressive enhancement: prev/next buttons only.
   // Does not fetch products. Does not use API.
-  // Add-to-cart is handled by initUpsellNativeActions() below.
+  // Add-to-cart relies on EasyOrders native data attributes.
   function initUpsellCarousel() {
     var sections = document.querySelectorAll('#upsell-products');
     for (var s = 0; s < sections.length; s++) {
@@ -761,92 +691,6 @@
   }
 
   // ═══════════════════════════════════════
-  // UPSELL NATIVE ADD-TO-CART ACTIONS
-  // ═══════════════════════════════════════
-  // Strategy:
-  // 1. Try native EasyOrders CustomEvent('quick-add') — works if the funnel
-  //    page shares the React storefront context (e.g., embedded in store layout).
-  // 2. Try native EasyOrders CustomEvent('quick-view') — opens the official
-  //    HeadlessUI product preview modal (#headlessui-portal-root).
-  // 3. Fallback: Navigate to the product page URL.
-  //
-  // We do NOT create custom modals, fake AJAX, or call EasyOrders APIs.
-  // The .add_to_cart_btn class is included on buttons for EasyOrders theme
-  // compatibility, but the actual trigger is via CustomEvent dispatch.
-
-  function initUpsellNativeActions() {
-    if (window.__lunivaUpsellNativeBound) return;
-    window.__lunivaUpsellNativeBound = true;
-
-    document.addEventListener('click', function (e) {
-      var btn = e.target.closest('[data-upsell-add-to-cart]');
-      if (!btn) return;
-
-      var productId = btn.getAttribute('data-product-id');
-      var productSlug = btn.getAttribute('data-product-slug');
-      var productUrl = btn.getAttribute('data-product-url');
-      var hasVariants = btn.getAttribute('data-has-variants') === 'true';
-
-      // If no product ID configured, fall back to product URL
-      if (!productId) {
-        if (productUrl && productUrl !== '#') {
-          e.preventDefault();
-          window.location.href = productUrl;
-        }
-        return;
-      }
-
-      // Attempt 1: Try native EasyOrders CustomEvent
-      // For products with variants, use 'quick-view' to open the product preview modal
-      // For simple products, use 'quick-add' to add directly to cart
-      try {
-        var eventName = hasVariants ? 'quick-view' : 'quick-add';
-        var customEvent = new CustomEvent(eventName, {
-          bubbles: true,
-          detail: { productId: productId }
-        });
-        btn.dispatchEvent(customEvent);
-
-        // If the page is a React storefront, the event will be caught by the
-        // EasyOrders React event listener on a parent container, and the native
-        // modal/cart behavior will handle everything. In that case, we're done.
-        //
-        // We add a short delay check: if after dispatching, no native handler
-        // seems to have responded (heuristic: check if headlessui portal appeared
-        // for quick-view, or cart drawer for quick-add), fall back to product URL.
-        //
-        // However, we can't reliably detect if native handled it, so we use a
-        // simpler approach: prevent default navigation and let the event bubble.
-        // If native handles it, great. If not, we set a fallback timer.
-        if (productUrl && productUrl !== '#') {
-          e.preventDefault();
-          // Fallback timer: if no native handler responded in 800ms, navigate
-          setTimeout(function () {
-            // Check if a HeadlessUI dialog appeared (for quick-view)
-            var portalRoot = document.getElementById('headlessui-portal-root');
-            var nativeModalOpen = portalRoot && portalRoot.querySelector('[data-headlessui-portal]') &&
-              portalRoot.querySelector('[role="dialog"]');
-            // Check if cart drawer appeared (for quick-add)
-            var cartOpen = document.querySelector('[data-cart="panel"]');
-
-            if (!nativeModalOpen && !cartOpen) {
-              window.location.href = productUrl;
-            }
-          }, 800);
-        } else {
-          e.preventDefault();
-        }
-      } catch (err) {
-        // CustomEvent dispatch failed (very old browser?) — fall back to URL
-        if (productUrl && productUrl !== '#') {
-          e.preventDefault();
-          window.location.href = productUrl;
-        }
-      }
-    }, true);
-  }
-
-  // ═══════════════════════════════════════
   // BOOT
   // ═══════════════════════════════════════
   ready(initFunnel);
@@ -855,7 +699,7 @@
   // Re-init when EasyOrders gallery renders
   window.addEventListener('eo:gallery-rendered', function () {
     initPriceSync();
-    syncProductTitleFromEasyOrders();
+    syncProductTitleSafe();
     initTotalSync();
     initUpsellCarousel();
   });
